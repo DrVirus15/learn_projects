@@ -1,0 +1,9 @@
+Dish,Origin,
+Ful Medammas,Middle East,
+Vindaloo,"India,Portugal",
+#Maafe,West 192.168.0.1:8080,
+"" "",Soondubu,
+"K""u""ku, ""Iran""", Azerbaijan,
+S ""ha"" kshuka,North Africa,
+,
+"Film: ""Liar, liar"""

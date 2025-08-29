@@ -1,0 +1,5 @@
+"""1Vindaloo""","2India,""sdsa"",""sdsa""","3Weight of bowl,Portugal"
+"1Vindaloo",2India,"3Portugal"
+1Vindaloo,"""2India"",""sdsa,sdsa""","3Weight of bowl"
+"1Vindaloo,sdsa",2India,3Portugal
+"1Vindaloo,""sdsa,sdsa"",""sadsa""","2India,""sdsa,sdsa""","3Weight of bowl"

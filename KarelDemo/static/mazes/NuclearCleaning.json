@@ -1,0 +1,13 @@
+{
+  "scene" : [
+    "1x x1x1x1x2x1x1x",
+    ">     1 1   1 1 ",
+    "1x x2x1x1x5x3x1x"
+  ],
+  "configurations" : {
+    "default" : {
+      "initial_beepers_count" : 1000,
+      "actions_limit":1000
+    }
+  }
+}
