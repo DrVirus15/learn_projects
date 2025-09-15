@@ -1,195 +1,186 @@
 package com.shpp.p2p.cs.akoskovtsev.assignment8;
 
+import acm.graphics.GOval;
 import acm.graphics.GPoint;
-import acm.graphics.GRect;
 import com.shpp.cs.a.graphics.WindowProgram;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
+/**
+ * This program allows the user to create balls by clicking and holding the mouse button.
+ * The longer the button is held, the larger and darker the ball becomes.
+ * When released, the ball falls under the influence of gravity,
+ * bouncing off the floor and ceiling with elasticity. If a ball is clicked, it reverses
+ * its gravity direction.
+ */
 public class Assignment8Part1 extends WindowProgram {
-    private final int ROW_SQUARES = 10;
-    private final int COL_SQUARES = 10;
-    private final double SQUARE_SIZE = 30;
-    private final Color MOUSELOOP_COLOR = Color.GREEN;
-    private final Color BLUE_SQUARE = Color.BLUE;
-    private final Color RED_SQUARE = Color.RED;
-    private final int DELAY = 100;
-    private int changeBlueWay = 1;
-    private int changeRedWay = 1;
-    private GPoint mousePosition;
+    /*
+     * Constants controlling the size of the application window.
+     */
+    public static final int APPLICATION_WIDTH = 700;
+    public static final int APPLICATION_HEIGHT = 700;
+    private final double SHADE_TIME = 1000; // Time in milliseconds to reach the darkest shade
+    private static final double GROW_TIME = 10.0; // Time in milliseconds to grow the ball by 1 pixel in radius
+    private static final int COLOR_BRIGHTNESS = 255; // Maximum brightness for the ball color
+    private static final double GRAVITY = 1.5; // Gravitational acceleration
+    private static final double ELASTICITY = 0.75; // Gravitational acceleration
+    private static final double ELASTICITY_DECAY = 0.05; // Gravitational acceleration
+    private static final int DELAY = 50;
+    private final GPoint mousePoint = new GPoint(-SHADE_TIME, -SHADE_TIME);
+    private long timePressed;
+    private final ArrayList<GOval> balls = new ArrayList<>();
 
     /**
-     * Runs the program.
-     * Draws a mouse loop and moves a blue square around it.
-     *
+     * Starts the program, adding mouse listeners and initiating the ball falling process.
      */
     @Override
     public void run() {
-        drawMouseloop();
-        loopSquares();
+        addMouseListeners();
+        fallBalls();
     }
 
-    /**
-     * Moves the blue square around the mouse loop.
-     * And moves the red square in the opposite direction
-     * If the blue square collides with the red square, they change direction.
-     */
-    private void loopSquares() {
-        int blueSquareXStep = -1;
-        int blueSquareYStep = 0;
-        int redSquareXStep = -1;
-        int redSquareYStep = 0;
-        addMouseListeners();
-        double startX = (getWidth() - SQUARE_SIZE * COL_SQUARES) / 2.0;
-        double startY = (getHeight() - SQUARE_SIZE * ROW_SQUARES) / 2.0;
-        // Create blue square at bottom right corner
-        GRect blue = drawSquare(startX + SQUARE_SIZE * (COL_SQUARES - 1), startY + SQUARE_SIZE * (ROW_SQUARES - 1), SQUARE_SIZE, BLUE_SQUARE);
-        add(blue);
-        // Create red square at top left corner
-        GRect red = drawSquare(startX, startY, SQUARE_SIZE, RED_SQUARE);
-        add(red);
+    // Elasticity coefficient for bounces
 
+    /**
+     * Handles the falling and bouncing of balls under gravity.
+     * If a ball is clicked, it reverses its gravity direction.
+     */
+    private void fallBalls() {
+        // Lists of vertical velocities for each ball
+        ArrayList<Double> dy = new ArrayList<>();
+
+        ArrayList<Double> elasticityForEachBall = new ArrayList<>();
+        // List to track gravity direction for each ball (1 for down, -1 for up)
+        ArrayList<Integer> reversGravity = new ArrayList<>();
         while (true) {
-            // move blue square
-            blue.move(SQUARE_SIZE * blueSquareXStep * changeBlueWay, SQUARE_SIZE * blueSquareYStep * changeBlueWay);
-            // check for collision with left side
-            if (blue.getX() < startX) {
-                blue.setLocation(startX, blue.getY());
-                changeBlueWay *= -1;
-                blueSquareXStep = 0;
-                blueSquareYStep = 1;
-            }
-            // check for collision with right side
-            if (blue.getX() > startX + SQUARE_SIZE * (COL_SQUARES - 1)) {
-                blue.setLocation(startX + SQUARE_SIZE * (COL_SQUARES - 1), blue.getY());
-                changeBlueWay *= -1;
-                blueSquareXStep = 0;
-                blueSquareYStep = -1;
-            }
-            // check for collision with bottom side
-            if (blue.getY() > startY + SQUARE_SIZE * (ROW_SQUARES - 1)) {
-                blue.setLocation(blue.getX(), startY + SQUARE_SIZE * (ROW_SQUARES - 1));
-                changeBlueWay *= -1;
-                blueSquareXStep = -1;
-                blueSquareYStep = 0;
-            }
-            // check for collision with top side
-            if (blue.getY() < startY) {
-                blue.setLocation(blue.getX(), startY);
-                changeBlueWay *= -1;
-                blueSquareXStep = 1;
-                blueSquareYStep = 0;
-            }
-            //check for mouse collision
-            if (isMouseOverPosition((int) ((blue.getY() - startY) / SQUARE_SIZE), (int) ((blue.getX() - startX) / SQUARE_SIZE))) {
-                changeBlueWay *= -1;
-            }
-            // move red square in opposite direction
-            red.move(SQUARE_SIZE * redSquareXStep * changeRedWay, SQUARE_SIZE * redSquareYStep * changeRedWay);
-            // check for collision with left side
-            if (red.getX() < startX) {
-                red.setLocation(startX, red.getY());
-                changeRedWay *= -1;
-                redSquareXStep = 0;
-                redSquareYStep = -1;
-            }
-            // check for collision with right side
-            if (red.getX() > startX + SQUARE_SIZE * (COL_SQUARES - 1)) {
-                red.setLocation(startX + SQUARE_SIZE * (COL_SQUARES - 1), red.getY());
-                changeRedWay *= -1;
-                redSquareXStep = 0;
-                redSquareYStep = 1;
-            }
-            // check for collision with bottom side
-            if (red.getY() > startY + SQUARE_SIZE * (ROW_SQUARES - 1)) {
-                red.setLocation(red.getX(), startY + SQUARE_SIZE * (ROW_SQUARES - 1));
-                changeRedWay *= -1;
-                redSquareXStep = 1;
-                redSquareYStep = 0;
-            }
-            // check for collision with top side
-            if (red.getY() < startY) {
-                red.setLocation(red.getX(), startY);
-                changeRedWay *= -1;
-                redSquareXStep = -1;
-                redSquareYStep = 0;
-            }
-            // check for collision with blue square
-            if (blue.getX() == red.getX() && blue.getY() == red.getY()) {
-                changeBlueWay *= -1;
-                changeRedWay *= -1;
+
+            for (int i = balls.size() - 1; i >= 0; i--) {
+                // Ensure dy and reversGravity lists are in sync with balls list
+                if (balls.size() > dy.size()) {
+                    dy.add(0.0);
+                    reversGravity.add(1);
+                    elasticityForEachBall.add(ELASTICITY);
+                }
+                // Check if the ball is clicked to reverse gravity
+                if (balls.get(i).getBounds().contains(mousePoint)) {
+                    mousePoint.setLocation(-SHADE_TIME, -SHADE_TIME);
+                    reversGravity.set(i, reversGravity.get(i) * -1);
+                    elasticityForEachBall.set(i, ELASTICITY);
+                }
+                // Move the ball and update its vertical velocity
+                balls.get(i).move(0, dy.get(i));
+                dy.set(i, dy.get(i) + GRAVITY * reversGravity.get(i));
+                // Handle bouncing off the floor
+                if (isBallBelowFloor(balls.get(i)) && dy.get(i) > 0) {
+                    dy.set(i, dy.get(i) * -elasticityForEachBall.get(i));
+                    if(elasticityForEachBall.get(i) > ELASTICITY_DECAY) {
+                        elasticityForEachBall.set(i, elasticityForEachBall.get(i) - ELASTICITY_DECAY);
+                    } else {
+                        elasticityForEachBall.set(i, 0.0);
+                    }
+                }
+                // Handle bouncing off the top
+                if (isBallUnderTop(balls.get(i)) && dy.get(i) < 0) {
+                    dy.set(i, dy.get(i) * -elasticityForEachBall.get(i));
+                    if(elasticityForEachBall.get(i) > ELASTICITY_DECAY) {
+                        elasticityForEachBall.set(i, elasticityForEachBall.get(i) - ELASTICITY_DECAY);
+                    } else {
+                        elasticityForEachBall.set(i, 0.0);
+                    }
+                }
             }
             pause(DELAY);
         }
     }
 
     /**
-     * Checks if the mouse is over the given position.
-     * @param row - row of the square
-     * @param col - column of the square
-     * @return - true if the mouse is over the square, false otherwise
-     */
-    private boolean isMouseOverPosition(int row, int col) {
-        double startX = (getWidth() - SQUARE_SIZE * COL_SQUARES) / 2.0;
-        double startY = (getHeight() - SQUARE_SIZE * ROW_SQUARES) / 2.0;
-        if (mousePosition == null) return false;
-
-        double squareX = startX + col * SQUARE_SIZE;
-        double squareY = startY + row * SQUARE_SIZE;
-
-        if(mousePosition.getX() >= squareX &&
-                mousePosition.getX() <= squareX + SQUARE_SIZE &&
-                mousePosition.getY() >= squareY &&
-                mousePosition.getY() <= squareY + SQUARE_SIZE) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * This method is called whenever the mouse is moved.
-     * @param e the event to be processed
-     */
-    public void mouseMoved(MouseEvent e) {
-        mousePosition = new GPoint(e.getX(), e.getY());
-    }
-
-
-    /**
-     * Draws the mouse loop on the screen.
-     */
-    private void drawMouseloop() {
-        GRect square;
-        double startX = (getWidth() - SQUARE_SIZE * COL_SQUARES) / 2.0;
-        double startY = (getHeight() - SQUARE_SIZE * ROW_SQUARES) / 2.0;
-        for (int row = 0; row < ROW_SQUARES; row++) {
-            for (int col = 0; col < COL_SQUARES; col++) {
-                if (row == 0 || row == ROW_SQUARES - 1 || col == 0 || col == COL_SQUARES - 1) {
-                    square = drawSquare(startX + col * SQUARE_SIZE,
-                            startY + row * SQUARE_SIZE,
-                            SQUARE_SIZE, MOUSELOOP_COLOR);
-                    add(square);
-                }
-            }
-        }
-    }
-
-    /**
-     * Draws a square of given size and color at (x, y).
+     * Checks if the ball has fallen below the floor.
      *
-     * @param x - top left x coordinate
-     * @param y - top left y coordinate
-     * @param size - size of the square
-     * @param color - fill color of the square
-     * @return - the drawn square
+     * @param ball - The ball to check.
+     * @return - true if the ball is below the floor, false otherwise.
      */
-    private GRect drawSquare(double x, double y, double size, Color color) {
-        GRect gRect = new GRect(x, y, size, size);
-        gRect.setFilled(true);
-        gRect.setFillColor(color);
-        gRect.setColor(Color.BLACK);
-        return gRect;
+    private boolean isBallBelowFloor(GOval ball) {
+        return ball.getY() + ball.getHeight() >= getHeight();
+    }
+
+    /**
+     * Checks if the ball has gone above the top of the window.
+     *
+     * @param ball - The ball to check.
+     * @return - true if the ball is above the top, false otherwise.
+     */
+    private boolean isBallUnderTop(GOval ball) {
+        return ball.getY() <= 0;
+    }
+
+    /**
+     * Creates a ball at the specified coordinates with size and color based on the duration of the mouse press.
+     *
+     * @param x - The x-coordinate where the ball is created.
+     * @param y - The y-coordinate where the ball is created.
+     */
+    private void makeBall(double x, double y) {
+
+        long timeFinish = System.currentTimeMillis();
+        long timeDuration = timeFinish - timePressed;
+        // Calculate the shade of gray based on the time the mouse was pressed
+        double ratio = Math.min(1, (double) timeDuration / SHADE_TIME);
+        System.out.println("timy Duration: " + timeDuration);
+        int grayColor = (int) (COLOR_BRIGHTNESS * (1.0 - ratio));
+        // Ensure the gray color is within valid bounds
+        grayColor = Math.max(0, Math.min(COLOR_BRIGHTNESS, grayColor));
+        Color shadeOfGray = new Color(grayColor, grayColor, grayColor);
+        // Calculate the radius of the ball based on the time the mouse was pressed
+        double radius = timeDuration / GROW_TIME;
+        // Create and add the ball to the canvas and the list
+        GOval ball = drawOval(x - radius, y - radius, radius, shadeOfGray);
+        add(ball);
+        balls.add(ball);
+    }
+
+    /**
+     * Draws an oval (ball) with the specified parameters.
+     *
+     * @param x     - x coordinate of the upper-left corner of the bounding box containing the oval.
+     * @param y     - y coordinate of the upper-left corner of the bounding box containing the oval.
+     * @param size  - radius of the oval.
+     * @param color - fill color of the oval.
+     * @return - the GOval object representing the oval.
+     */
+    private GOval drawOval(double x, double y, double size, Color color) {
+        GOval gOval = new GOval(x, y, size * 2.0, size * 2.0);
+        gOval.setFilled(true);
+        gOval.setFillColor(color);
+        gOval.setColor(color);
+        return gOval;
+    }
+
+    /**
+     * Handles mouse press events to record the time when the mouse button is pressed.
+     *
+     * @param e -  the event to be processed
+     */
+    @Override
+    public void mousePressed(MouseEvent e) {
+        timePressed = System.currentTimeMillis();
+    }
+
+    /**
+     * Handles mouse release events to create a ball or set the mouse point for gravity reversal.
+     *
+     * @param e - the event to be processed
+     */
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // Check if the mouse was released over an existing ball
+        if (getElementAt(e.getX(), e.getY()) instanceof GOval) {
+            // Set the mouse point to trigger gravity reversal
+            mousePoint.setLocation(e.getX(), e.getY());
+        } else {
+            // Create a new ball at the release point
+            makeBall(e.getX(), e.getY());
+        }
     }
 }
-
