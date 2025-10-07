@@ -12,17 +12,9 @@ import java.util.Queue;
 public class BFSSearcher {
     private final int BACKGROUND_PIXEL; // The ARGB value of the background pixel
     private final BufferedImage IMAGE; // The image to be processed
-    private final BackgroundFinder FINDER; // Utility to compare pixel colors
 
-    /**
-     * Constructor to initialize the DFSSearcher with the necessary components.
-     *
-     * @param finder - an instance of BackgroundFinder to help with pixel comparison
-     * @param image  - the image to be analyzed
-     * @param pixel  - the ARGB value of the background pixel
-     */
-    public BFSSearcher(BackgroundFinder finder, BufferedImage image, int pixel) {
-        this.FINDER = finder;
+
+    public BFSSearcher(BufferedImage image, int pixel) {
         this.IMAGE = image;
         this.BACKGROUND_PIXEL = pixel;
     }
@@ -47,27 +39,32 @@ public class BFSSearcher {
             row = point.getX();
             col = point.getY();
             countOfPixels++;
-            for (int x = -1; x <= 1; x++) {
-                for (int y = -1; y <= 1; y++) {
-                    if (x == 0 && y == 0) continue;
-                    int newRow = row + x;
-                    int newCol = col + y;
-                    if (isValid(newRow, newCol, isVisited)) {
-                        isVisited[newRow][newCol] = true; // Mark the pixel as visited
-                        queue.offer(new ImagePoint(newRow, newCol));
-                    }
-                }
-            }
+            findBreads(row, col, queue, isVisited);
         }
+
         return countOfPixels;
     }
 
-    private boolean isValid(int row, int col, boolean[][] isVisited) {
-        return  !isOutOfBounds(row, col)&& // Check for out-of-bounds
-                !isVisited[row][col] && // Check if already visited
-                !FINDER.isPixelSimilar(IMAGE.getRGB(col, row), BACKGROUND_PIXEL); // Check if it's a background pixel TODO передавать колір а не піксель (або наоборот)
+    private void findBreads(int row, int col, Queue<ImagePoint> queue, boolean[][] isVisited) {
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                if (x == 0 && y == 0) continue;
+                int newRow = row + x;
+                int newCol = col + y;
+                if (isValid(newRow, newCol, isVisited)) {
+                    isVisited[newRow][newCol] = true;
+                    queue.offer(new ImagePoint(newRow, newCol));
+                }
+            }
+        }
     }
-    private boolean isOutOfBounds(int row, int col){
+
+    private boolean isValid(int row, int col, boolean[][] isVisited) {
+        return  isInBounds(row, col)&& // Check for out-of-bounds
+                !isVisited[row][col] && // Check if already visited
+                !SimilarPixelFinder.isPixelSimilar(IMAGE.getRGB(col, row), BACKGROUND_PIXEL); // TODO передавать колір а не піксель (або наоборот)
+    }
+    private boolean isInBounds(int row, int col){
         return row >= 0 && col >= 0 && row < IMAGE.getHeight() && col < IMAGE.getWidth();
     }
 

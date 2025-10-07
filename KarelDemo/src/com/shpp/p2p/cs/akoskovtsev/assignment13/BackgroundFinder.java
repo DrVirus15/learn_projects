@@ -1,6 +1,5 @@
 package com.shpp.p2p.cs.akoskovtsev.assignment13;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,14 +11,11 @@ import java.util.Map;
  */
 public class BackgroundFinder {
     private final BufferedImage IMAGE; // The image to be processed
-
-
-
+    private final HashMap<Integer, Integer> map = new HashMap<>();
 
     public BackgroundFinder(BufferedImage image) {
         this.IMAGE = image;
     }
-
 
     /**
      * Finds the most frequent color in the image, treating it as the background color.
@@ -28,30 +24,33 @@ public class BackgroundFinder {
      * @return - the ARGB value of the identified background color
      */
     public int findBackground() {
-        HashMap<Integer, Integer> colorMap = new HashMap<>(); // Map to store color frequencies
-        for (int row = 0; row < IMAGE.getHeight(); row++) {
-            outer:                              // TODO remove it
-            for (int col = 0; col < IMAGE.getWidth(); col++) {
-                int pixel = IMAGE.getRGB(col, row);
-                for (Integer existingColor : colorMap.keySet()) {
-                    if (SimilarPixelFinder.isPixelSimilar(pixel, existingColor)) {
-                        colorMap.put(existingColor, colorMap.get(existingColor) + 1);
-                        continue outer;
-                    }
-                }
-                colorMap.put(pixel, 1);
-            }
-        }
+        fillHashMap();
         int numberOfPixels = 0;
         int backgroundPixel = 0;
-
-        for (Map.Entry<Integer, Integer> entry : colorMap.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
             if (entry.getValue() > numberOfPixels) {
                 numberOfPixels = entry.getValue();
                 backgroundPixel = entry.getKey();
             }
         }
-
         return backgroundPixel;
+    }
+
+    private void fillHashMap() {
+        for (int row = 0; row < IMAGE.getHeight(); row++) {
+            for (int col = 0; col < IMAGE.getWidth(); col++) {
+                handlePix(IMAGE.getRGB(col, row));
+            }
+        }
+    }
+
+    private void handlePix(int pixel) {
+        for (Map.Entry<Integer, Integer> existing : map.entrySet()) {
+            if (SimilarPixelFinder.isPixelSimilar(pixel, existing.getKey())) {
+                map.put(existing.getKey(), existing.getValue() + 1);
+                return;
+            }
+        }
+        map.put(pixel, 1);
     }
 }
