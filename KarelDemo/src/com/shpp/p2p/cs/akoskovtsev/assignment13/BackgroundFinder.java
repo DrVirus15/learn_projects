@@ -4,30 +4,39 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This clas identifies the most frequent (dominant) color group in an image,treating it as the background.
- * The **accuracyPercentage** defines the color tolerance (delta) for grouping similar pixels.
- * The returned value is the representative color of the largest group.
- */
 public class BackgroundFinder {
-    private final BufferedImage IMAGE; // The image to be processed
-    private final HashMap<Integer, Integer> map = new HashMap<>();
+    /**
+     * Step for sampling pixels (1 = every pixel, 2 = every second pixel, etc.)
+     */
+    private static final int SAMPLE_STEP = 2;
+    /**
+     * The image to be analyzed for background color.
+     */
+    private final BufferedImage image;
+    /**
+     * A map to store the frequency of each color in the image.
+     */
+    private final Map<Integer, Integer> colorFrequencyMap = new HashMap<>();
 
+    /**
+     * Constructor to initialize the BackgroundFinder with the image.
+     *
+     * @param image - the image to be analyzed
+     */
     public BackgroundFinder(BufferedImage image) {
-        this.IMAGE = image;
+        this.image = image;
     }
 
     /**
-     * Finds the most frequent color in the image, treating it as the background color.
-     * It groups similar colors based on the accuracy percentage.
+     * Finds the most frequent color in the image, which is assumed to be the background color.
      *
-     * @return - the ARGB value of the identified background color
+     * @return - the ARGB value of the most frequent color (background color)
      */
     public int findBackground() {
-        fillHashMap();
+        calculateColorFrequencies();
         int numberOfPixels = 0;
         int backgroundPixel = 0;
-        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : colorFrequencyMap.entrySet()) {
             if (entry.getValue() > numberOfPixels) {
                 numberOfPixels = entry.getValue();
                 backgroundPixel = entry.getKey();
@@ -36,21 +45,29 @@ public class BackgroundFinder {
         return backgroundPixel;
     }
 
-    private void fillHashMap() {
-        for (int row = 0; row < IMAGE.getHeight(); row++) {
-            for (int col = 0; col < IMAGE.getWidth(); col++) {
-                handlePix(IMAGE.getRGB(col, row));
+    /**
+     * Calculates the frequency of each color in the image by sampling pixels at defined intervals.
+     */
+    private void calculateColorFrequencies() {
+        for (int row = 0; row < image.getHeight(); row += SAMPLE_STEP) {
+            for (int col = 0; col < image.getWidth(); col += SAMPLE_STEP) {
+                processPixel(image.getRGB(col, row));
             }
         }
     }
 
-    private void handlePix(int pixel) {
-        for (Map.Entry<Integer, Integer> existing : map.entrySet()) {
+    /**
+     * Processes a single pixel, updating the color frequency map.
+     *
+     * @param pixel - the ARGB value of the pixel to be processed
+     */
+    private void processPixel(int pixel) {
+        for (Map.Entry<Integer, Integer> existing : colorFrequencyMap.entrySet()) {
             if (SimilarPixelFinder.isPixelSimilar(pixel, existing.getKey())) {
-                map.put(existing.getKey(), existing.getValue() + 1);
+                colorFrequencyMap.put(existing.getKey(), existing.getValue() + 1);
                 return;
             }
         }
-        map.put(pixel, 1);
+        colorFrequencyMap.put(pixel, 1);
     }
 }

@@ -1,106 +1,105 @@
 package com.shpp.p2p.cs.akoskovtsev.assignment13;
 
-
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * A class to find and count silhouettes in a given image.
+ */
 public class SilhouettesFinder {
-
-    private final double MIN_SIZE_RATIO = 0.08;
-
-    private final int width;
-    private final int height;
+    /**
+     * The ratio to filter out noise (small silhouettes).
+     * Silhouettes smaller than this ratio of the largest silhouette will be ignored.
+     * For example, with a ratio of 0.08, silhouettes smaller than 8% of the largest silhouette will be considered noise.
+     */
+    private static final double NOISE_FILTER_RATIO = 0.08;
+    /**
+     * The image in which silhouettes are to be found.
+     */
     private final BufferedImage image;
 
-
+    /**
+     * Constructor to initialize the SilhouettesFinder with the image.
+     *
+     * @param image - the image to be analyzed
+     */
     public SilhouettesFinder(BufferedImage image) {
         this.image = image;
-        width = image.getWidth();
-        height = image.getHeight();
     }
 
+    /**
+     * Counts the number of valid silhouettes in the image.
+     * It creates a silhouette mask, finds all silhouettes, and filters out noise.
+     *
+     * @return - the count of valid silhouettes
+     */
+    public int countSilhouettes() {
+        List<Integer> silhouettes = findSilhouettes(createSilhouetteMask());
+        return countValidSilhouettes(silhouettes);
+    }
 
-    public int countSilhouettes(){
-        BackgroundFinder finder = new BackgroundFinder(image);
-        int backgroundPix = finder.findBackground();
-        Eraser erase = new Eraser(image, backgroundPix);
-//        boolean[][] imageWithSilhouettes = erase.eraseSlips();
-        BufferedImage processedImage = erase.eraseSlips();
-        System.out.println("erised. Start to find silyettes.");
-        ArrayList<Integer> silhouettes = findSilhouettes(processedImage, backgroundPix);
-        int max = findBigSilhouette(silhouettes);
-        int noiseThreshold = (int) Math.round(max * MIN_SIZE_RATIO);
+    /**
+     * Creates a silhouette mask by separating silhouettes from the background.
+     *
+     * @return - a 2D boolean array where true indicates a background pixel and false indicates silhouette pixel
+     */
+    private boolean[][] createSilhouetteMask() {
+        Eraser erase = new Eraser(image, new BackgroundFinder(image).findBackground());
+        return erase.separateSilhouettesMask();
+    }
+
+    /**
+     * Counts the number of valid silhouettes by filtering out small ones considered as noise.
+     *
+     * @param silhouettes - a list of silhouette sizes
+     * @return - the count of valid silhouettes
+     */
+    private int countValidSilhouettes(List<Integer> silhouettes) {
+        int largestSilhouetteSize = findLargestSilhouetteSize(silhouettes);
+        int minValidSize = (int) (largestSilhouetteSize * NOISE_FILTER_RATIO);
         int silhouettesCount = 0;
         for (Integer silhouette : silhouettes) {
-            if (silhouette > noiseThreshold) {
+            if (silhouette > minValidSize) {
                 silhouettesCount++;
             }
         }
-
-
-
-        String filePathForNewFile = "assets/zzz.png";
-        String format = "png";
-        int size = image.getHeight() * image.getWidth();
-        BufferedImage dummyImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        int[][] imageDouble = new int[image.getHeight()][image.getWidth()];
-        for (int row = 0; row < image.getHeight(); row++) {
-            for (int col = 0; col < image.getWidth(); col++) {
-                imageDouble[row][col] = processedImage.getRGB(col, row);
-            }
-        }
-        int[] odnovumirniyMassive = new int[size];
-        int index = 0;
-        for (int[] ints : imageDouble) {
-            for (int col = 0; col < imageDouble[0].length; col++) {
-                odnovumirniyMassive[index] = ints[col];
-                index++;
-            }
-        }
-        dummyImage.setRGB(0, 0, image.getWidth(), image.getHeight(),
-                odnovumirniyMassive, 0, image.getWidth());
-        saveImage(dummyImage, filePathForNewFile, format);
-
         return silhouettesCount;
     }
 
-    public ArrayList<Integer> findSilhouettes(BufferedImage image, int backgroundPix) {
+    /**
+     * Finds all silhouettes in the image using BFS and returns their sizes.
+     *
+     * @param silhouetteMask - a 2D boolean array where true indicates a background pixel and false indicates silhouette pixel
+     * @return - a list of silhouette sizes
+     */
+    public List<Integer> findSilhouettes(boolean[][] silhouetteMask) {
+        int width = image.getWidth();
+        int height = image.getHeight();
         boolean[][] visited = new boolean[height][width];
-        BFSSearcher bfs = new BFSSearcher(image, backgroundPix);
-        ArrayList<Integer> silhouettes = new ArrayList<>();
+        BFSSearcher bfs = new BFSSearcher(silhouetteMask);
+        List<Integer> silhouetteSizes = new ArrayList<>();
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                if (!visited[row][col] && !SimilarPixelFinder.isPixelSimilar(image.getRGB(col, row), backgroundPix)) {
-                    silhouettes.add(bfs.startBFS(visited, row, col));
+                // silhouetteMask is true for background pixels, so we start BFS on false (silhouette) pixels
+                if (!visited[row][col] && !silhouetteMask[row][col]) {
+                    silhouetteSizes.add(bfs.runBFS(visited, row, col));
                 }
             }
         }
-        return silhouettes;
+        return silhouetteSizes;
     }
 
-    public int findBigSilhouette(ArrayList<Integer> silhouettes) {
-        if (silhouettes.isEmpty()) return 0;
-        int maxPixForOneSilhouettes = 0;
+    /**
+     * Finds the size of the largest silhouette from the list of silhouette sizes.
+     * @param silhouettes - a list of silhouette sizes
+     * @return - the size of the largest silhouette
+     */
+    public int findLargestSilhouetteSize(List<Integer> silhouettes) {
+        int maxSize = 0;
         for (Integer silhouette : silhouettes) {
-            maxPixForOneSilhouettes = Math.max(silhouette, maxPixForOneSilhouettes);
+            maxSize = Math.max(silhouette, maxSize);
         }
-        return maxPixForOneSilhouettes;
+        return maxSize;
     }
-
-    private static void saveImage(BufferedImage image, String filePath, String format) {
-        try {
-            File outputfile = new File(filePath);
-            ImageIO.write(image, format, outputfile);
-            System.out.println("Зображення успішно збережено за шляхом: " + filePath);
-        } catch (IOException e) {
-            System.err.println("Помилка при збереженні зображення: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-
 }

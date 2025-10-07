@@ -1,16 +1,9 @@
 package com.shpp.p2p.cs.akoskovtsev.assignment13;
 
-public class ImagePoint {
-    private int x;
-    private int y;
-    public ImagePoint(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-    public int getX() {
-        return x;
-    }
-    public int getY() {
-        return y;
-    }
+/**
+ * A simple record to represent a point in an image with row and column coordinates.
+ * @param row - the row index of the point
+ * @param col - the column index of the point
+ */
+public record ImagePoint(int row, int col) {
 }
