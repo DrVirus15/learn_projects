@@ -2,15 +2,10 @@ package com.shpp.p2p.cs.akoskovtsev.assignment9;
 
 import java.util.*;
 
-/**
- * A class that
- *
- * @param <E>
- */
 public class MyArrayList<E> implements Iterable<E>, MyList<E> {
     private final int DEFAULT_CAPACITY = 10;
     private int capacity = DEFAULT_CAPACITY;
-    private int nElems;
+    private int size;
     private E[] list;
 
 
@@ -18,17 +13,13 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
     public MyArrayList(int initialCapacity) {
         capacity = initialCapacity;
         list = (E[]) new Object[capacity];
-        nElems = 0;
+        size = 0;
     }
 
     @SuppressWarnings("unchecked")
     public MyArrayList() {
         list = (E[]) new Object[capacity];
-        nElems = 0;
-    }
-
-    public boolean isEmpty() {
-        return nElems == 0;
+        size = 0;
     }
 
     @SuppressWarnings("unchecked")
@@ -38,7 +29,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
             newCapacity = minCapacity;
         }
         Object[] newList = new Object[newCapacity];
-        System.arraycopy(list, 0, newList, 0, nElems);
+        System.arraycopy(list, 0, newList, 0, size);
         list = (E[]) newList;
     }
 
@@ -48,95 +39,113 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
         }
     }
 
-    public void add(int index, E element) {
-        if (index < 0 || index > nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
-        }
-        if (nElems == capacity) {
+    @Override
+    public boolean add(E element) {
+        if (size == capacity) {
             updateCapacity(0);
         }
-        for (int j = nElems - 1; j >= index; j--) {
+        list[size] = element;
+        size++;
+        return true;
+    }
+
+    @Override
+    public void add(int index, E element) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        if (size == capacity) {
+            updateCapacity(0);
+        }
+        for (int j = size - 1; j >= index; j--) {
             list[j + 1] = list[j];
         }
         list[index] = element;
-        nElems++;
+        size++;
     }
 
-    public void add(E element) {
-        if (nElems == capacity) {
-            updateCapacity(0);
-        }
-        list[nElems] = element;
-        nElems++;
-    }
-
+    @Override
     public void addFirst(E element) {
-        if (nElems == capacity) {
+        if (size == capacity) {
             updateCapacity(0);
         }
-        int size = nElems;
+        int size = this.size;
         for (int i = size; i > 0; i--) {
             list[i] = list[i - 1];
         }
         list[0] = element;
-        nElems++;
+        this.size++;
     }
 
-
+    @Override
     public void addLast(E element) {
         add(element);
     }
 
+    @Override
     public boolean addAll(Collection<? extends E> c) {
         int sizeToAdd = c.size();
         if (c.isEmpty()) {
             return false;
         }
-        updateCapacity(nElems + sizeToAdd);
-        int index = nElems;
+        updateCapacity(size + sizeToAdd);
+        int index = size;
         for (E element : c) {
             list[index++] = element;
         }
-        nElems += sizeToAdd;
+        size += sizeToAdd;
         return true;
     }
 
-
+    @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        if (index < 0 || index > nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
         int sizeToAdd = c.size();
         if (sizeToAdd == 0) {
             return false;
         }
-        updateCapacity(nElems + sizeToAdd);
+        updateCapacity(size + sizeToAdd);
         int startIndex = index + sizeToAdd;
-        int lastElementOfList = nElems - 1;
-        for (int i = nElems + sizeToAdd - 1; i >= startIndex; i--) {
+        int lastElementOfList = size - 1;
+        for (int i = size + sizeToAdd - 1; i >= startIndex; i--) {
             list[i] = list[lastElementOfList--];
         }
         for (E element : c) {
             list[index++] = element;
         }
-        nElems += sizeToAdd;
+        size += sizeToAdd;
         return true;
     }
 
+    @Override
+    public E set(int index, E element) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        E oldElement = list[index];
+        list[index] = element;
+        return oldElement;
+    }
+
+    @Override
     public E get(int index) {
-        if (index < 0 || index >= nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
         return list[index];
     }
 
+    @Override
     public E getLast() {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        return list[nElems - 1];
+        return list[size - 1];
     }
 
+    @Override
     public E getFirst() {
         if (isEmpty()) {
             throw new NoSuchElementException();
@@ -144,26 +153,103 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
         return list[0];
     }
 
-    public E set(int index, E element) {
-        if (index < 0 || index >= nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
+    @Override
+    public E remove(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
-        E oldElement = list[index];
-        list[index] = element;
-        return oldElement;
+        E elem = list[index];
+        for (int i = index; i < size - 1; i++) {
+            list[i] = list[i + 1];
+        }
+        size--;
+        list[size] = null;
+        return elem;
     }
 
-    /**
-     * Returns the size of list.
-     *
-     * @return - number of elements.
-     */
-    public int size() {
-        return nElems;
+    @Override
+    public boolean remove(Object elem) {
+        if (isEmpty()) {
+            return false;
+        }
+        int i;
+        for (i = 0; i < size; i++) {
+            if (Objects.equals(list[i], elem)) {
+                break;
+            }
+        }
+        if (i == size) {
+            return false;
+        } else {
+            for (int j = i; j < size - 1; j++) {
+                list[j] = list[j + 1];
+            }
+            size--;
+            list[size] = null;
+            return true;
+        }
     }
 
+    @Override
+    public E removeLast() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        E temp = list[size - 1];
+        list[size - 1] = null;
+        size--;
+        return temp;
+    }
+
+    @Override
+    public E removeFirst() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        E temp = list[0];
+        for (int i = 0; i < size - 1; i++) {
+            list[i] = list[i + 1];
+        }
+        list[size - 1] = null;
+        size--;
+        return temp;
+    }
+
+    public int indexOf(Object o) {
+        int index = -1;
+        if (isEmpty()) {
+            return index;
+        }
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(list[i], o)) {
+                return i;
+            }
+        }
+        return index;
+    }
+
+    public int lastIndexOf(Object o) {
+        int index = -1;
+        if (isEmpty()) {
+            return index;
+        }
+        for (int i = size - 1; i >= 0; i--) {
+            if (Objects.equals(list[i], o)) {
+                return i;
+            }
+        }
+        return index;
+    }
+
+    @Override
+    public void clear() {
+        Arrays.fill(list, null);
+        size = 0;
+    }
+
+    @Override
     public boolean contains(Object o) {
-        for (int i = 0; i < nElems; i++) {
+        for (int i = 0; i < size; i++) {
             if (Objects.equals(list[i], o)) {
                 return true;
             }
@@ -171,73 +257,21 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
         return false;
     }
 
-    public E remove(int index) {
-        if (index < 0 || index >= nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
-        }
-        E elem = list[index];
-        for (int i = index; i < nElems - 1; i++) {
-            list[i] = list[i + 1];
-        }
-        nElems--;
-        list[nElems] = null;
-        return elem;
+    @Override
+    public int size() {
+        return size;
     }
 
-    public boolean remove(Object elem) {
-        if(isEmpty()){
-            return false;
-        }
-        int i;
-        for (i = 0; i < nElems; i++) {
-            if (Objects.equals(list[i], elem)) {
-                break;
-            }
-        }
-        if (i == nElems) {
-            return false;
-        } else {
-            for (int j = i; j < nElems - 1; j++) {
-                list[j] = list[j + 1];
-            }
-            nElems--;
-            list[nElems] = null;
-            return true;
-        }
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
     }
 
-    public E removeLast() {
-        if (isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        E temp = list[nElems - 1];
-        list[nElems - 1] = null;
-        nElems--;
-        return temp;
-    }
-
-    public E removeFirst() {
-        if (isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        E temp = list[0];
-        for (int i = 0; i < nElems - 1; i++) {
-            list[i] = list[i + 1];
-        }
-        list[nElems - 1] = null;
-        nElems--;
-        return temp;
-    }
-
-    public void clear() {
-        Arrays.fill(list, null);
-        nElems = 0;
-    }
-
+    @Override
     public String toString() {
         StringBuilder stringList = new StringBuilder("[");
-        for (int i = 0; i < nElems; i++) {
-            if (i != nElems - 1) {
+        for (int i = 0; i < size; i++) {
+            if (i != size - 1) {
                 stringList.append(list[i]).append(", ");
             } else {
                 stringList.append(list[i]);
@@ -255,12 +289,12 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
             @Override
             public boolean hasNext() {
-                return index < nElems;
+                return index < size;
             }
 
             @Override
             public E next() {
-                if (index >= nElems) {
+                if (index >= size) {
                     throw new NoSuchElementException();
                 }
                 previous = index;
@@ -273,14 +307,6 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
                     throw new IllegalStateException();
                 }
                 MyArrayList.this.remove(previous);
-
-
-                /*
-                for (int i = previous; i < nElems - 1; i++) {
-                    list[i] = list[i + 1];
-                }
-                nElems--;
-                list[nElems] = null;*/
                 index = previous;
                 previous = -1;
             }

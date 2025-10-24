@@ -1,9 +1,6 @@
 package com.shpp.p2p.cs.akoskovtsev.assignment9;
 
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class MyTestList {
     private static final String TEST_PASSED = "Test passed: ";
@@ -17,71 +14,44 @@ public class MyTestList {
     }
 
     private static void testMyList() {
-        LinkedList<String> linkedList = new LinkedList<>();
-        ArrayList<String> arrayList = new ArrayList<>();
 
-//        MyLinkedList<String> myLinkedList = new MyLinkedList<>();
-//        for (int i = 0; i < MAXIMUM_SIZE; i++) {
-//            myLinkedList.add(String.valueOf(i));
-//            linkedList.add(String.valueOf(i));
-//        }
-//        Iterator<String> iteratorLinked = linkedList.iterator();
-//        Iterator<String> iterator = myLinkedList.iterator();
-//        while (iteratorLinked.hasNext()) {
-//            iteratorLinked.next();
-//            iteratorLinked.remove();
-//        }
-//        System.out.println(linkedList);
-//
-//        while (iterator.hasNext()) {
-//            iterator.next();
-//            iterator.remove();
-//        }
-//
         testAddIndexFirstLast(initLinkedList(DEFAULT_SIZE));
         testAddIndexFirstLast(initArrayList(DEFAULT_SIZE));
-
-        testGetSet(initLinkedList(DEFAULT_SIZE));
-        testGetSet(initArrayList(DEFAULT_SIZE));
-
-        testGetLastGetFirst(initLinkedList(DEFAULT_SIZE));
-        testGetLastGetFirst(initArrayList(DEFAULT_SIZE));
-
-        testRemove(initLinkedList(DEFAULT_SIZE));
-        testRemove(initArrayList(DEFAULT_SIZE));
-
-        testRemoveLastFirst(initLinkedList(DEFAULT_SIZE));
-        testRemoveLastFirst(initArrayList(DEFAULT_SIZE));
-
-        testClear(initLinkedList(DEFAULT_SIZE));
-        testClear(initArrayList(DEFAULT_SIZE));
-
 
         testAddAllToString(initLinkedList(MAXIMUM_SIZE));
         testAddAllToString(initArrayList(MAXIMUM_SIZE));
 
+        testGetSet(initLinkedList(MAXIMUM_SIZE));
+        testGetSet(initArrayList(MAXIMUM_SIZE));
+
+        testGetLastGetFirst(initLinkedList(DEFAULT_SIZE));
+        testGetLastGetFirst(initArrayList(DEFAULT_SIZE));
+
+        testRemoveLastFirst(initLinkedList(MAXIMUM_SIZE));
+        testRemoveLastFirst(initArrayList(MAXIMUM_SIZE));
+
+        testClear(initLinkedList(DEFAULT_SIZE));
+        testClear(initArrayList(DEFAULT_SIZE));
+
         testIterator(initLinkedList(MAXIMUM_SIZE));
         testIterator(initArrayList(MAXIMUM_SIZE));
-//        testUpdateCapacity();
+
+        testDescendingIterator();
+        testQueue();
+        testStack();
     }
 
     private static void testAddIndexFirstLast(MyList<String> myList) {
         String testName = "add() & add(index) & addLast() & addFirst(): " + myList.getClass().getSimpleName();
         int index = 1;
         String expectedString = TEST_STRING;
+        myList.addFirst(null);
+        myList.addLast(TEST_STRING);
         myList.add(index, expectedString);
         String actualString = myList.get(index);
-        if (actualString.equals(expectedString)) {
-            myList.addFirst(null);
-            if (myList.getFirst() != null && myList.get(1).equals(String.valueOf(0))) {
-                printFAIL(testName);
-                return;
-            }
-            myList.addLast(TEST_STRING);
-            if (!TEST_STRING.equals(myList.getLast())) {
-                printFAIL(testName);
-                return;
-            }
+        if (myList.getFirst() == null &&
+                TEST_STRING.equals(myList.getLast()) &&
+                actualString.equals(expectedString)) {
             printPASS(testName);
         } else {
             printFAIL(testName);
@@ -89,114 +59,115 @@ public class MyTestList {
     }
 
     private static void testAddAllToString(MyList<String> myList) {
-        String testName = "addAll() & addAll(index) & toString(): " + myList.getClass().getSimpleName();
+        String testName = "addAll() & addAll(index) & toString() & updateCapacity(): " + myList.getClass().getSimpleName();
+
         ArrayList<String> expectedList = new ArrayList<>();
         ArrayList<String> arrayList = new ArrayList<>();
-        for (int i = 0; i < MAXIMUM_SIZE; i++) {
+        MyLinkedList<String> newLinkedList = new MyLinkedList<>();
+        int index = 0;
+        // 1
+        index++;
+        if (myList.addAll(0, arrayList)) {
+            printFAIL(testName + " #" + index);
+            return;
+        }
+        // 2
+        index++;
+        for (int i = 0; i < myList.size(); i++) {
             expectedList.add(String.valueOf(i));
             arrayList.add(String.valueOf(i));
         }
-        //1
-        try {
-            myList.addAll(myList.size() + 1, arrayList);
-        } catch (IndexOutOfBoundsException e){
-            printPASS(testName);
-        }
-        //2
-        try {
-            myList.addAll(-1, arrayList);
-        } catch (IndexOutOfBoundsException e){
-            printPASS(testName);
-        }
-        //3
-        ArrayList<String> list = new ArrayList<>();
-        if(list.addAll(0, list)){
-            printFAIL(testName);
-        }else {
-            printPASS(testName);
-        }
-        //4
-        MyLinkedList<String> newLinkedList = new MyLinkedList<>();
+        newLinkedList.clear();
         newLinkedList.addAll(0, arrayList);
-        if(arrayList.toString().equals(newLinkedList.toString())){
-            printPASS(testName);
-        } else {
-            printFAIL(testName);
+        if (!isMyListValid(newLinkedList, arrayList)) {
+            printFAIL(testName + " #" + index);
+            return;
         }
-        //5
-
+        // 3
+        index++;
         myList.addAll(0, arrayList);
         expectedList.addAll(0, arrayList);
-        if(myList.toString().equals(expectedList.toString())){
+        if (!isMyListValid(myList, expectedList)) {
+            printFAIL(testName + " #" + index);
+            return;
+        }
+        // 4
+        index++;
+        myList.addAll(arrayList);
+        expectedList.addAll(arrayList);
+        if (!isMyListValid(myList, expectedList)) {
+            printFAIL(testName + " #" + index);
+            return;
+        }
+        // 5
+        index++;
+        myList.addAll(myList.size() / 2, arrayList);
+        expectedList.addAll(expectedList.size() / 2, arrayList);
+        if (!isMyListValid(myList, expectedList)) {
+            printFAIL(testName + " #" + index);
+            return;
+        }
+        // 6
+        index++;
+        myList.addAll(myList.size() - 1, arrayList);
+        expectedList.addAll(expectedList.size() - 1, arrayList);
+        if (!isMyListValid(myList, expectedList)) {
+            printFAIL(testName + " #" + index);
+            return;
+        }
+        // 7
+        index++;
+        StringBuilder reverse = new StringBuilder();
+        StringBuilder expectedReverse = new StringBuilder();
+        for (int i = myList.size() - 1; i >= 0; i--) {
+            expectedReverse.append(expectedList.get(i));
+            reverse.append(myList.get(i));
+        }
+        if (!reverse.toString().contentEquals(expectedReverse)) {
+            printFAIL(testName + " #" + index);
+            return;
+        }
+        // 8
+        index++;
+        boolean exceptionTest8 = false;
+        try {
+            myList.addAll(myList.size() + 1, arrayList);
+        } catch (IndexOutOfBoundsException e) {
+            exceptionTest8 = true;
+        }
+        // 9
+        index++;
+        boolean exceptionTest9 = false;
+        try {
+            myList.addAll(-1, arrayList);
+        } catch (IndexOutOfBoundsException e) {
+            exceptionTest9 = true;
+        }
+        if (!exceptionTest8 || !exceptionTest9) {
+            String testNumber = !exceptionTest8 ? " #8" : " #" + index;
+            printFAIL(testName + testNumber);
+        } else {
+            printPASS(testName);
+        }
+    }
+
+    private static boolean isMyListValid(MyList<String> myList, ArrayList<String> expectedList) {
+        return myList.toString().equals(expectedList.toString());
+    }
+
+    private static void testGetSet(MyList<String> myList) {
+        String testName = "get() & set(): " + myList.getClass().getSimpleName();
+        int testIndex = MAXIMUM_SIZE / 2;
+        String expectedNewValue = TEST_STRING;
+        String valueBeforeSet = myList.get(testIndex);
+        String returnedOldValue = myList.set(testIndex, expectedNewValue);
+        String actualNewValue = myList.get(testIndex);
+        if (expectedNewValue.equals(actualNewValue) && returnedOldValue.equals(valueBeforeSet)) {
             printPASS(testName);
         } else {
             printFAIL(testName);
         }
-        //6
-
-        myList.addAll(myList.size(), arrayList);
-        expectedList.addAll(expectedList.size(), arrayList);
-        if(myList.toString().equals(expectedList.toString())){
-            printPASS(testName);
-        }else {
-            printFAIL(testName);
-        }
-        //7
-
-         myList.addAll(myList.size()/2, arrayList);
-        expectedList.addAll(expectedList.size()/2, arrayList);
-        if(myList.toString().equals(expectedList.toString())){
-            printPASS(testName);
-        }else {
-            printFAIL(testName);
-        }
-//        8
-        myList.clear();
-        myList.add(TEST_STRING);
-        myList.addAll(myList.size(), arrayList);
-        expectedList.clear();
-        expectedList.add(TEST_STRING);
-        expectedList.addAll(expectedList.size(), arrayList);
-        if(myList.toString().equals(expectedList.toString())){
-            printPASS(testName);
-        }else {
-            printFAIL(testName);
-        }
-        //9
-        arrayList.clear();
-        arrayList.add(TEST_STRING);
-        myList.addAll(1, arrayList);
-        expectedList.addAll(1, arrayList);
-        if(myList.toString().equals(expectedList.toString())){
-            printPASS(testName);
-        }else {
-            printFAIL(testName);
-        }
     }
-
-    private static MyList<String> initLinkedList(int size) {
-        MyList<String> myLinkedListTest = new MyLinkedList<>();
-        for (int i = 0; i < size; i++) {
-            myLinkedListTest.add(String.valueOf(i));
-        }
-        return myLinkedListTest;
-    }
-
-    private static void testRemoveLastFirst(MyList<String> myList) {
-        String testName = "removeLast() & removeFirst() & size(): " + myList.getClass().getSimpleName();
-        String firstElement = myList.removeFirst();
-        String lastElement = myList.removeLast();
-        if (myList.getFirst().equals(String.valueOf(1)) &&
-                myList.getLast().equals(String.valueOf(DEFAULT_SIZE - 2)) &&
-                myList.size() == DEFAULT_SIZE - 2 &&
-                firstElement.equals(String.valueOf(0)) &&
-                lastElement.equals(String.valueOf(DEFAULT_SIZE - 1))) {
-            printPASS(testName);
-        } else {
-            printFAIL(testName + myList);
-        }
-    }
-
 
     private static void testGetLastGetFirst(MyList<String> myList) {
         String testName = "getLast() & getFirst(): " + myList.getClass().getSimpleName();
@@ -208,74 +179,42 @@ public class MyTestList {
         }
     }
 
-    private static void testRemove(MyList<String> myList) {
-        String testName = "remove(index) & remove(Object) & contains(): " + myList.getClass().getSimpleName();
-        String firstElement = String.valueOf(0);
-        String secondElement = String.valueOf(1);
-        String lastElement = String.valueOf(DEFAULT_SIZE - 1);
-        myList.remove(lastElement);
-        if (!myList.contains(lastElement) && myList.size() == DEFAULT_SIZE - 1) {
-            myList.remove(firstElement);
-            if (myList.contains(firstElement) || !myList.getFirst().equals(secondElement) ||
-                    myList.remove(firstElement)) {
-                printFAIL(testName);
-            } else {
-                printPASS(testName);
-            }
-        } else {
+    private static void testRemoveLastFirst(MyList<String> myList) {
+        String testName = "removeLast() & " +
+                "removeFirst() & " +
+                "remove(index) & " +
+                "remove(Object) & " +
+                "contains() & " +
+                "size() & " +
+                "updateCapacity: " + myList.getClass().getSimpleName();
+        LinkedList<String> expectedList = new LinkedList<>();
+        int index = DEFAULT_SIZE;
+        for (int i = 0; i < myList.size(); i++) {
+            expectedList.add(String.valueOf(i));
+        }
+        if(!myList.removeFirst().equals(expectedList.removeFirst()) &&
+                !myList.removeLast().equals(expectedList.removeLast())){
             printFAIL(testName);
+            return;
+        }
+        if(!myList.remove(index).equals(expectedList.remove(index))){
+            printFAIL(testName);
+            return;
+        }
+        String element  = myList.getLast();
+        myList.remove(element);
+        expectedList.remove(element);
+        if (!myList.toString().equals(expectedList.toString()) && myList.contains(element)){
+            printFAIL(testName);
+        } else {
+            printPASS(testName);
         }
     }
 
     private static void testClear(MyList<String> myList) {
         String testName = "clear() & isEmpty(): " + myList.getClass().getSimpleName();
-//        MyArrayList<String> myArrayListTest = initArrayList(DEFAULT_SIZE);
         myList.clear();
         if (myList.isEmpty()) {
-            printPASS(testName);
-        } else {
-            printFAIL(testName);
-        }
-    }
-
-
-    private static void testUpdateCapacity() {
-        String testName = "updateCapacity";
-        int testSize = MAXIMUM_SIZE;
-        MyArrayList<String> myArrayListTest = initArrayList(testSize);
-        if (testSize == myArrayListTest.size() &&
-                myArrayListTest.getFirst().equals(String.valueOf(0)) &&
-                myArrayListTest.getLast().equals(String.valueOf(MAXIMUM_SIZE - 1))) {
-            printPASS(testName);
-        } else {
-            printFAIL(testName);
-        }
-    }
-
-    private static MyArrayList<String> initArrayList(int size) {
-        MyArrayList<String> myArrayListTest = new MyArrayList<>();
-        for (int i = 0; i < size; i++) {
-            myArrayListTest.add(String.valueOf(i));
-        }
-        return myArrayListTest;
-    }
-
-    public static void printPASS(String testName) {
-        System.out.println(TEST_PASSED + testName);
-    }
-
-    public static void printFAIL(String testName) {
-        System.err.println(TEST_FAILED + testName);
-    }
-
-    private static void testGetSet(MyList<String> myList) {
-        String testName = "get() & set(): " + myList.getClass().getSimpleName();
-        int testIndex = 1;
-        String expectedNewValue = TEST_STRING;
-        String valueBeforeSet = myList.get(testIndex);
-        String returnedOldValue = myList.set(testIndex, expectedNewValue);
-        String actualNewValue = myList.get(testIndex);
-        if (expectedNewValue.equals(actualNewValue) && returnedOldValue.equals(valueBeforeSet)) {
             printPASS(testName);
         } else {
             printFAIL(testName);
@@ -294,5 +233,102 @@ public class MyTestList {
         } else {
             printFAIL(testName);
         }
+    }
+
+    private static void testDescendingIterator() {
+        String testName = "DescendingIterator(): MyLinkedList";
+        MyLinkedList<String> myList = new MyLinkedList<>();
+        LinkedList<String> expectedList = new LinkedList<>();
+        for (int i = 0; i < MAXIMUM_SIZE; i++) {
+            myList.add(String.valueOf(i));
+            expectedList.add(String.valueOf(i));
+        }
+        Iterator<String> myIterator = myList.descendingIterator();
+        Iterator<String> expectedIterator = expectedList.descendingIterator();
+        while (myIterator.hasNext()) {
+            if (myIterator.next().equals(expectedIterator.next())) {
+                myIterator.remove();
+                expectedIterator.remove();
+            }
+        }
+        if (myList.isEmpty()) {
+            printPASS(testName);
+        } else {
+            printFAIL(testName);
+        }
+    }
+
+    private static void testQueue() {
+        String testName = "offer() & peek() & poll() & empty(): MyQueue";
+        MyQueue<String> myQueue = new MyQueue<>();
+        Deque<String> expectedDeque = new LinkedList<>();
+        for (int i = 0; i < DEFAULT_SIZE; i++) {
+            myQueue.offer(String.valueOf(i));
+            expectedDeque.offer(String.valueOf(i));
+        }
+        if (!myQueue.peek().equals(expectedDeque.peek())) {
+            printFAIL(testName);
+            return;
+        }
+        while (!myQueue.empty()) {
+            if (!myQueue.poll().equals(expectedDeque.poll())) {
+                printFAIL(testName);
+                return;
+            }
+        }
+        if (myQueue.empty()) {
+            printPASS(testName);
+        } else {
+            printFAIL(testName);
+        }
+    }
+
+    private static void testStack() {
+        String testName = "push() & peek() & pop() & empty(): MyStack";
+        MyStack<String> myStack = new MyStack<>();
+        Stack<String> expectedStack = new Stack<>();
+        for (int i = 0; i < DEFAULT_SIZE; i++) {
+            myStack.push(String.valueOf(i));
+            expectedStack.push(String.valueOf(i));
+        }
+        if (!myStack.peek().equals(expectedStack.peek())) {
+            printFAIL(testName);
+            return;
+        }
+        while (!myStack.empty()) {
+            if (!myStack.pop().equals(expectedStack.pop())) {
+                printFAIL(testName);
+                return;
+            }
+        }
+        if (myStack.empty()) {
+            printPASS(testName);
+        } else {
+            printFAIL(testName);
+        }
+    }
+
+    private static MyArrayList<String> initArrayList(int size) {
+        MyArrayList<String> myArrayListTest = new MyArrayList<>();
+        for (int i = 0; i < size; i++) {
+            myArrayListTest.add(String.valueOf(i));
+        }
+        return myArrayListTest;
+    }
+
+    private static MyLinkedList<String> initLinkedList(int size) {
+        MyLinkedList<String> myLinkedListTest = new MyLinkedList<>();
+        for (int i = 0; i < size; i++) {
+            myLinkedListTest.add(String.valueOf(i));
+        }
+        return myLinkedListTest;
+    }
+
+    public static void printPASS(String testName) {
+        System.out.println(TEST_PASSED + testName);
+    }
+
+    public static void printFAIL(String testName) {
+        System.err.println(TEST_FAILED + testName);
     }
 }

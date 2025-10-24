@@ -23,144 +23,16 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
     private Link first;
 
     private Link last;
-    private int nElems = 0;
+    private int size = 0;
 
     public MyLinkedList() {
         first = null;
     }
 
-    public void clear() {
-        Link current = first;
-        for (int i = 0; i < nElems; i++) {
-            current.value = null;
-            current = current.next;
-        }
-        first = null;
-        last = null;
-        nElems = 0;
-    }
-
-    public void addFirst(E e) {
-        Link newLink = new Link(e);
-        if (isEmpty()) {
-            last = newLink;
-        } else {
-            first.previous = newLink;
-        }
-        newLink.next = first;
-        first = newLink;
-        nElems++;
-    }
-
-    public int size() {
-        return nElems;
-    }
-
     @Override
-    public boolean contains(Object o) {
-        if (isEmpty()) {
-            return false;
-        }
-        Link current = first;
-        while (current != null) {
-            if (Objects.equals(current.value, o)) {
-                return true;
-            }
-            current = current.next;
-        }
-        return false;
-    }
-
-    public E peek() {
-        return first.value;
-    }
-
-    public E set(int index, E e) {
-        if (index < 0 || index >= nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
-        }
-        E oldElement;
-        if (index == 0) {
-            oldElement = first.value;
-            first.value = e;
-        } else if (index == nElems - 1) {
-            oldElement = last.value;
-            last.value = e;
-        } else {
-            Link current = first;
-            for (int i = 0; i < index; i++) {
-                current = current.next;
-            }
-            oldElement = current.value;
-            current.value = e;
-        }
-        return oldElement;
-    }
-
-    @Override
-    public E remove(int index) {
-        if (index < 0 || index >= nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
-        }
-        E oldElement;
-        Link current;
-        if (nElems == 1) {
-            oldElement = first.value;
-            first = null;
-            last = null;
-        } else if (index == 0) {
-            oldElement = first.value;
-            first = first.next;
-            first.previous = null;
-        } else if (index == nElems - 1) {
-            oldElement = last.value;
-            last = last.previous;
-            last.next = null;
-        } else {
-            current = first;
-            for (int i = 0; i < index; i++) {
-                current = current.next;
-            }
-            oldElement = current.value;
-            current.previous.next = current.next;
-            current.next.previous = current.previous;
-        }
-        nElems--;
-        return oldElement;
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        if (isEmpty()) {
-            return false;
-        }
-        if (nElems == 1 && Objects.equals(first.value, o)) {
-            first = null;
-            last = null;
-        } else if (Objects.equals(first.value, o)) {
-            first = first.next;
-            first.previous = null;
-        } else if (Objects.equals(last.value, o)) {
-            last = last.previous;
-            last.next = null;
-        } else {
-            Link current = first;
-            while (!Objects.equals(current.value, o)) {
-                current = current.next;
-                if (current == null) {
-                    return false;
-                }
-            }
-            current.next.previous = current.previous;
-            current.previous.next = current.next;
-        }
-        nElems--;
-        return true;
-    }
-
     public void add(int index, E e) {
-        if (index < 0 || index > nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
         Link current = first;
         Link newLink = new Link(e);
@@ -172,7 +44,7 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
                 newLink.next = current;
             }
             first = newLink;
-        } else if (index == nElems) {
+        } else if (index == size) {
             last.next = newLink;
             newLink.previous = last;
             last = newLink;
@@ -185,10 +57,11 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
             current.next.previous = newLink;
             current.next = newLink;
         }
-        nElems++;
+        size++;
     }
 
-    public void add(E e) {
+    @Override
+    public boolean add(E e) {
         Link newLink = new Link(e);
         if (isEmpty()) {
             first = newLink;
@@ -197,66 +70,26 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
             newLink.previous = last;
         }
         last = newLink;
-        nElems++;
+        size++;
+        return true;
     }
 
-    public boolean isEmpty() {
-        return first == null;
-    }
-
-    public E get(int index) { // TODO можна покращити цей метод, пошук з кінця
-        if (index < 0 || index >= nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
-        }
-        if (index == 0) {
-            return first.value;
-        }
-        Link current = first;
-        if (index < nElems / 2) {
-            for (int i = 0; i < index; i++) {
-                current = current.next;
-            }
+    @Override
+    public void addFirst(E e) {
+        Link newLink = new Link(e);
+        if (isEmpty()) {
+            last = newLink;
         } else {
-            for (int i = nElems; i > index; i--) {
-                current = current.previous;
-            }
+            first.previous = newLink;
         }
-        return current.value;
+        newLink.next = first;
+        first = newLink;
+        size++;
     }
 
-    public E getFirst() {
-        if (isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        Link current = first;
-        return current.value;
-    }
-
-    public E getLast() {
-        if (isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        Link current = last;
-        return current.value;
-    }
-
+    @Override
     public void addLast(E e) {
         add(e);
-    }
-
-    public E removeLast() {
-        if (isEmpty()) {
-            throw new NoSuchElementException();
-        }
-        Link current = last;
-        last = current.previous;
-        if (nElems == 1) {
-            first = null;
-        } else {
-            current.previous.next = null;
-        }
-        nElems--;
-        return current.value;
     }
 
     @Override
@@ -272,13 +105,13 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        if (index < 0 || index > nElems) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + nElems);
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
         if (c.isEmpty()) {
             return false;
         }
-        if (isEmpty() || index == nElems) {
+        if (isEmpty() || index == size) {
             for (E element : c) {
                 add(element);
             }
@@ -309,16 +142,140 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
                 newLink.previous = prevNode;
                 prevNode = newLink;
             }
-            nElems++;
+            size++;
         }
     }
 
+    @Override
+    public E set(int index, E e) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        E oldElement;
+        if (index == 0) {
+            oldElement = first.value;
+            first.value = e;
+        } else if (index == size - 1) {
+            oldElement = last.value;
+            last.value = e;
+        } else {
+            Link current = first;
+            for (int i = 0; i < index; i++) {
+                current = current.next;
+            }
+            oldElement = current.value;
+            current.value = e;
+        }
+        return oldElement;
+    }
+
+    @Override
+    public E get(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        if (index == 0) {
+            return first.value;
+        }
+        Link current = first;
+        if (index < size / 2) {
+            for (int i = 0; i < index; i++) {
+                current = current.next;
+            }
+        } else {
+            current = last;
+            for (int i = size - 1; i > index; i--) {
+                current = current.previous;
+            }
+        }
+        return current.value;
+    }
+
+    @Override
+    public E getFirst() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        return first.value;
+    }
+
+    @Override
+    public E getLast() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        Link current = last;
+        return current.value;
+    }
+
+    @Override
+    public E remove(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        E oldElement;
+        Link current;
+        if (size == 1) {
+            oldElement = first.value;
+            first = null;
+            last = null;
+        } else if (index == 0) {
+            oldElement = first.value;
+            first = first.next;
+            first.previous = null;
+        } else if (index == size - 1) {
+            oldElement = last.value;
+            last = last.previous;
+            last.next = null;
+        } else {
+            current = first;
+            for (int i = 0; i < index; i++) {
+                current = current.next;
+            }
+            oldElement = current.value;
+            current.previous.next = current.next;
+            current.next.previous = current.previous;
+        }
+        size--;
+        return oldElement;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        if (isEmpty()) {
+            return false;
+        }
+        if (size == 1 && Objects.equals(first.value, o)) {
+            first = null;
+            last = null;
+        } else if (Objects.equals(first.value, o)) {
+            first = first.next;
+            first.previous = null;
+        } else if (Objects.equals(last.value, o)) {
+            last = last.previous;
+            last.next = null;
+        } else {
+            Link current = first;
+            while (!Objects.equals(current.value, o)) {
+                current = current.next;
+                if (current == null) {
+                    return false;
+                }
+            }
+            current.next.previous = current.previous;
+            current.previous.next = current.next;
+        }
+        size--;
+        return true;
+    }
+
+    @Override
     public E removeFirst() {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
         Link current = first;
-        if (nElems == 1) {
+        if (size == 1) {
             first = null;
             last = null;
         } else {
@@ -326,10 +283,64 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
             first.previous = null;
         }
         current.next = null;
-        nElems--;
+        size--;
         return current.value;
     }
 
+    @Override
+    public E removeLast() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        Link current = last;
+        last = current.previous;
+        if (size == 1) {
+            first = null;
+        } else {
+            current.previous.next = null;
+        }
+        size--;
+        return current.value;
+    }
+
+    @Override
+    public void clear() {
+        Link current = first;
+        for (int i = 0; i < size; i++) {
+            current.value = null;
+            current = current.next;
+        }
+        first = null;
+        last = null;
+        size = 0;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        if (isEmpty()) {
+            return false;
+        }
+        Link current = first;
+        while (current != null) {
+            if (Objects.equals(current.value, o)) {
+                return true;
+            }
+            current = current.next;
+        }
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return first == null;
+    }
+
+    @Override
     public String toString() {
         Link current = first;
         StringBuilder stringList = new StringBuilder("[");
@@ -347,21 +358,21 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
     @Override
     public Iterator<E> iterator() {
         return new Iterator<>() {
-            private int iteratorIndex = 0;
+            private int index = 0;
             private int previousIndex = -1;
 
             @Override
             public boolean hasNext() {
-                return iteratorIndex < nElems;
+                return index < size;
             }
 
             @Override
             public E next() {
-                if (iteratorIndex >= nElems) {
+                if (index >= size) {
                     throw new NoSuchElementException();
                 }
-                previousIndex = iteratorIndex;
-                return get(iteratorIndex++);
+                previousIndex = index;
+                return get(index++);
             }
 
             @Override
@@ -370,10 +381,39 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
                     throw new IllegalStateException();
                 }
                 MyLinkedList.this.remove(previousIndex);
-                iteratorIndex = previousIndex;
+                index = previousIndex;
                 previousIndex = -1;
             }
         };
     }
 
+    public Iterator<E> descendingIterator() {
+        return new Iterator<>() {
+            private int index = size - 1;
+            private int previousIndex = -1;
+
+            @Override
+            public boolean hasNext() {
+                return index >= 0;
+            }
+
+            @Override
+            public E next() {
+                if (index < 0) {
+                    throw new NoSuchElementException();
+                }
+                previousIndex = index;
+                return get(index--);
+            }
+
+            @Override
+            public void remove() {
+                if (previousIndex == -1) {
+                    throw new IllegalStateException();
+                }
+                MyLinkedList.this.remove(previousIndex);
+                previousIndex = -1;
+            }
+        };
+    }
 }
