@@ -10,6 +10,11 @@ import java.util.Iterator;
 public interface MyList<E> {
     boolean add(E element);
 
+    /**
+     *
+     * @param index
+     * @param element
+     */
     void add(int index, E element);
 
     void addFirst(E element);

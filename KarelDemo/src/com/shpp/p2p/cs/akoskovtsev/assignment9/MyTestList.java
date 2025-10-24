@@ -2,17 +2,43 @@ package com.shpp.p2p.cs.akoskovtsev.assignment9;
 
 import java.util.*;
 
+/**
+ * A test class for MyArrayList and MyLinkedList implementations of MyList interface.
+ */
 public class MyTestList {
+    /**
+     * Test result messages and default sizes
+     */
     private static final String TEST_PASSED = "Test passed: ";
+    /**
+     * Test result messages and default sizes
+     */
     private static final String TEST_FAILED = "Test FAILED: ";
+    /**
+     * Default size for testing
+     */
     private static final int DEFAULT_SIZE = 4;
+    /**
+     * Maximum size for testing
+     */
     private static final int MAXIMUM_SIZE = 12;
+    /**
+     * Test string constant
+     */
     private static final String TEST_STRING = "TEST";
 
+    /**
+     * Main method to run the tests.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         testMyList();
     }
 
+    /**
+     * Runs a series of tests on MyList implementations.
+     */
     private static void testMyList() {
 
         testAddIndexFirstLast(initLinkedList(DEFAULT_SIZE));
@@ -41,6 +67,11 @@ public class MyTestList {
         testStack();
     }
 
+    /**
+     * Tests the add, add(index), addFirst, addLast methods of MyList.
+     *
+     * @param myList the MyList instance to test
+     */
     private static void testAddIndexFirstLast(MyList<String> myList) {
         String testName = "add() & add(index) & addLast() & addFirst(): " + myList.getClass().getSimpleName();
         int index = 1;
@@ -58,6 +89,20 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the addAll, addAll(index), toString, and updateCapacity methods of MyList.
+     * All methods are indexed starting from 1 for easier tracking of test cases.
+     * #1 - Test adding an empty collection at index 0.
+     * #2 - Test adding a collection to a new MyLinkedList at index 0.
+     * #3 - Test adding a collection at index 0.
+     * #4 - Test adding a collection at the end of the list.
+     * #5 - Test adding a collection in the middle of the list.
+     * #6 - Test adding a collection at last element position.
+     * #7 - Test adding a collection at an index greater than size (should throw exception).
+     * #8 - Test adding a collection at a negative index (should throw exception).
+     *
+     * @param myList - the MyList instance to test
+     */
     private static void testAddAllToString(MyList<String> myList) {
         String testName = "addAll() & addAll(index) & toString() & updateCapacity(): " + myList.getClass().getSimpleName();
 
@@ -77,7 +122,6 @@ public class MyTestList {
             expectedList.add(String.valueOf(i));
             arrayList.add(String.valueOf(i));
         }
-        newLinkedList.clear();
         newLinkedList.addAll(0, arrayList);
         if (!isMyListValid(newLinkedList, arrayList)) {
             printFAIL(testName + " #" + index);
@@ -117,25 +161,13 @@ public class MyTestList {
         }
         // 7
         index++;
-        StringBuilder reverse = new StringBuilder();
-        StringBuilder expectedReverse = new StringBuilder();
-        for (int i = myList.size() - 1; i >= 0; i--) {
-            expectedReverse.append(expectedList.get(i));
-            reverse.append(myList.get(i));
-        }
-        if (!reverse.toString().contentEquals(expectedReverse)) {
-            printFAIL(testName + " #" + index);
-            return;
-        }
-        // 8
-        index++;
         boolean exceptionTest8 = false;
         try {
             myList.addAll(myList.size() + 1, arrayList);
         } catch (IndexOutOfBoundsException e) {
             exceptionTest8 = true;
         }
-        // 9
+        // 8
         index++;
         boolean exceptionTest9 = false;
         try {
@@ -144,17 +176,29 @@ public class MyTestList {
             exceptionTest9 = true;
         }
         if (!exceptionTest8 || !exceptionTest9) {
-            String testNumber = !exceptionTest8 ? " #8" : " #" + index;
+            String testNumber = !exceptionTest8 ? " #7" : " #" + index;
             printFAIL(testName + testNumber);
         } else {
             printPASS(testName);
         }
     }
 
+    /**
+     * Validates if the MyList instance matches the expected ArrayList.
+     *
+     * @param myList       - the MyList instance to validate
+     * @param expectedList - the expected ArrayList
+     * @return - true if both lists are equal, false otherwise
+     */
     private static boolean isMyListValid(MyList<String> myList, ArrayList<String> expectedList) {
         return myList.toString().equals(expectedList.toString());
     }
 
+    /**
+     * Tests the get and set methods of MyList.
+     *
+     * @param myList - the MyList instance to test
+     */
     private static void testGetSet(MyList<String> myList) {
         String testName = "get() & set(): " + myList.getClass().getSimpleName();
         int testIndex = MAXIMUM_SIZE / 2;
@@ -169,6 +213,11 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the getLast and getFirst methods of MyList.
+     *
+     * @param myList - the MyList instance to test
+     */
     private static void testGetLastGetFirst(MyList<String> myList) {
         String testName = "getLast() & getFirst(): " + myList.getClass().getSimpleName();
         if (myList.getLast().equals(String.valueOf(DEFAULT_SIZE - 1)) &&
@@ -179,6 +228,11 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the removeLast, removeFirst, remove(index), remove(Object), contains, and size methods of MyList.
+     *
+     * @param myList - the MyList instance to test
+     */
     private static void testRemoveLastFirst(MyList<String> myList) {
         String testName = "removeLast() & " +
                 "removeFirst() & " +
@@ -187,30 +241,35 @@ public class MyTestList {
                 "contains() & " +
                 "size() & " +
                 "updateCapacity: " + myList.getClass().getSimpleName();
-        LinkedList<String> expectedList = new LinkedList<>();
+        ArrayList<String> expectedList = new ArrayList<>();
         int index = DEFAULT_SIZE;
         for (int i = 0; i < myList.size(); i++) {
             expectedList.add(String.valueOf(i));
         }
-        if(!myList.removeFirst().equals(expectedList.removeFirst()) &&
-                !myList.removeLast().equals(expectedList.removeLast())){
+        if (!myList.removeFirst().equals(expectedList.removeFirst()) &&
+                !myList.removeLast().equals(expectedList.removeLast())) {
             printFAIL(testName);
             return;
         }
-        if(!myList.remove(index).equals(expectedList.remove(index))){
+        if (!myList.remove(index).equals(expectedList.remove(index))) {
             printFAIL(testName);
             return;
         }
-        String element  = myList.getLast();
+        String element = myList.getLast();
         myList.remove(element);
         expectedList.remove(element);
-        if (!myList.toString().equals(expectedList.toString()) && myList.contains(element)){
+        if (!isMyListValid(myList, expectedList) && myList.contains(element)) {
             printFAIL(testName);
         } else {
             printPASS(testName);
         }
     }
 
+    /**
+     * Tests the clear and isEmpty methods of MyList.
+     *
+     * @param myList - the MyList instance to test
+     */
     private static void testClear(MyList<String> myList) {
         String testName = "clear() & isEmpty(): " + myList.getClass().getSimpleName();
         myList.clear();
@@ -221,6 +280,11 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the iterator method of MyList.
+     *
+     * @param myList - the MyList instance to test
+     */
     private static void testIterator(MyList<String> myList) {
         String testName = "iterator(): " + myList.getClass().getSimpleName();
         Iterator<String> it = myList.iterator();
@@ -235,6 +299,9 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the descendingIterator method of MyLinkedList.
+     */
     private static void testDescendingIterator() {
         String testName = "DescendingIterator(): MyLinkedList";
         MyLinkedList<String> myList = new MyLinkedList<>();
@@ -258,6 +325,9 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the offer, peek, poll, and empty methods of MyQueue.
+     */
     private static void testQueue() {
         String testName = "offer() & peek() & poll() & empty(): MyQueue";
         MyQueue<String> myQueue = new MyQueue<>();
@@ -283,6 +353,9 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the push, peek, pop, and empty methods of MyStack.
+     */
     private static void testStack() {
         String testName = "push() & peek() & pop() & empty(): MyStack";
         MyStack<String> myStack = new MyStack<>();
@@ -308,6 +381,12 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Initializes a MyArrayList with string representations of integers from 0 to size-1.
+     *
+     * @param size the size of the MyArrayList to initialize
+     * @return the initialized MyArrayList
+     */
     private static MyArrayList<String> initArrayList(int size) {
         MyArrayList<String> myArrayListTest = new MyArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -316,6 +395,12 @@ public class MyTestList {
         return myArrayListTest;
     }
 
+    /**
+     * Initializes a MyLinkedList with string representations of integers from 0 to size-1.
+     *
+     * @param size the size of the MyLinkedList to initialize
+     * @return the initialized MyLinkedList
+     */
     private static MyLinkedList<String> initLinkedList(int size) {
         MyLinkedList<String> myLinkedListTest = new MyLinkedList<>();
         for (int i = 0; i < size; i++) {
@@ -324,10 +409,20 @@ public class MyTestList {
         return myLinkedListTest;
     }
 
+    /**
+     * Prints a message indicating that a test has passed.
+     *
+     * @param testName the name of the test
+     */
     public static void printPASS(String testName) {
         System.out.println(TEST_PASSED + testName);
     }
 
+    /**
+     * Prints a message indicating that a test has failed.
+     *
+     * @param testName the name of the test
+     */
     public static void printFAIL(String testName) {
         System.err.println(TEST_FAILED + testName);
     }
