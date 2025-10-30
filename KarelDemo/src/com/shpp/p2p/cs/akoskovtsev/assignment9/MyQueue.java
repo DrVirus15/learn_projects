@@ -61,4 +61,22 @@ public class MyQueue<E> {
     public boolean empty() {
         return linkedList.isEmpty();
     }
+
+    /**
+     * Returns the number of elements in the queue.
+     * @return - the size of the queue.
+     */
+    public int size(){
+        return linkedList.size();
+    }
+
+    /**
+     * Returns a string representation of the queue.
+     *
+     * @return a string representation of the queue.
+     */
+    @Override
+    public String toString() {
+        return linkedList.toString();
+    }
 }

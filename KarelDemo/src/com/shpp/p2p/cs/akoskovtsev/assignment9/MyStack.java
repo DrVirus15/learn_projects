@@ -36,11 +36,8 @@ public class MyStack<E> {
      * @return the element that was pushed onto the stack
      */
     public E push(E e) {
-        if (arrayList.add(e)) {
-            return e;
-        } else {
-            return null;
-        }
+        arrayList.add(e);
+        return e;
     }
 
     /**
@@ -88,5 +85,23 @@ public class MyStack<E> {
     public int search(Object o) {
         int lastIndex = arrayList.lastIndexOf(o);
         return lastIndex != -1 ? arrayList.size() - lastIndex : lastIndex;
+    }
+
+    /**
+     * Returns the number of elements in the stack.
+     * @return - the size of the stack.
+     */
+    public int size(){
+        return arrayList.size();
+    }
+
+    /**
+     * Returns a string representation of the stack.
+     *
+     * @return a string representation of the stack.
+     */
+    @Override
+    public String toString(){
+        return arrayList.toString();
     }
 }

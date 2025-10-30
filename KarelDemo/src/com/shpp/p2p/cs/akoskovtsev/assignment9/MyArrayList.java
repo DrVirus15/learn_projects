@@ -47,30 +47,32 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
     }
 
     /**
-     * Updates the capacity of the list to accommodate at least the specified minimum capacity.
+     * Updates the capacity of the list to contain at least the specified minimum capacity.
      *
      * @param minCapacity the minimum capacity required
      */
-    @SuppressWarnings("unchecked") //TODO: capacity warning
+    @SuppressWarnings("unchecked")
     private void updateCapacity(int minCapacity) {
         int newCapacity = capacity + capacity / 2;
         if (minCapacity > newCapacity) {
             newCapacity = minCapacity;
         }
-        Object[] newList = new Object[newCapacity];
+        E[] newList = (E[]) new Object[newCapacity];
         System.arraycopy(list, 0, newList, 0, size);
-        list = (E[]) newList;
+        list = newList;
+        capacity = newCapacity;
     }
 
     /**
      * Adds the specified element to the end of the list.
+     *
      * @param element the element to be added
      * @return true if the element was added successfully
      */
     @Override
     public boolean add(E element) {
         if (size == capacity) {
-            updateCapacity(0);
+            updateCapacity(size + 1);
         }
         list[size] = element;
         size++;
@@ -79,7 +81,8 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Adds the specified element at the specified index in the list.
-     * @param index the index at which the element is to be added
+     *
+     * @param index   the index at which the element is to be added
      * @param element the element to be added
      */
     @Override
@@ -88,7 +91,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
         if (size == capacity) {
-            updateCapacity(0);
+            updateCapacity(size + 1);
         }
         for (int j = size - 1; j >= index; j--) {
             list[j + 1] = list[j];
@@ -99,6 +102,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Adds the specified element at the beginning of the list.
+     *
      * @param element the element to be added
      */
     @Override
@@ -108,6 +112,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Adds the specified element at the end of the list.
+     *
      * @param element the element to be added
      */
     @Override
@@ -117,6 +122,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Adds all elements from the specified collection to the end of the list.
+     *
      * @param c the collection containing elements to be added
      * @return true if the list changed as a result of the call
      */
@@ -137,8 +143,9 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Adds all elements from the specified collection starting at the specified index in the list.
+     *
      * @param index the index at which to insert the first element from the specified collection
-     * @param c the collection containing elements to be added
+     * @param c     the collection containing elements to be added
      * @return true if the list changed as a result of the call
      */
     @Override
@@ -151,11 +158,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
             return false;
         }
         updateCapacity(size + sizeToAdd);
-        int startIndex = index + sizeToAdd;
-        int lastElementOfList = size - 1;
-        for (int i = size + sizeToAdd - 1; i >= startIndex; i--) {
-            list[i] = list[lastElementOfList--];
-        }
+        System.arraycopy(list, index, list, index + sizeToAdd, size - index);
         for (E element : c) {
             list[index++] = element;
         }
@@ -165,7 +168,8 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Replaces the element at the specified position in the list with the specified element.
-     * @param index the index of the element to replace
+     *
+     * @param index   the index of the element to replace
      * @param element the element to be stored at the specified position
      * @return the element previously at the specified position
      */
@@ -181,6 +185,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Returns the element at the specified position in the list.
+     *
      * @param index the index of the element to return
      * @return the element at the specified position in the list
      */
@@ -194,6 +199,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Returns the last element in the list.
+     *
      * @return the last element in the list
      */
     @Override
@@ -206,6 +212,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Returns the first element in the list.
+     *
      * @return the first element in the list
      */
     @Override
@@ -218,6 +225,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Removes the element at the specified position in the list.
+     *
      * @param index the index of the element to be removed
      * @return the element that was removed from the list
      */
@@ -237,6 +245,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Removes the first occurrence of the specified element from the list, if it is present.
+     *
      * @param elem the element to be removed from the list, if present
      * @return true if the list contained the specified element, false otherwise
      */
@@ -265,6 +274,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Removes and returns the last element from the list.
+     *
      * @return the last element from the list
      */
     @Override
@@ -280,6 +290,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Removes and returns the first element from the list.
+     *
      * @return the first element from the list
      */
     @Override
@@ -299,6 +310,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
     /**
      * Returns the index of the first occurrence of the specified element in the list,
      * or -1 if the list does not contain the element.
+     *
      * @param o the element to search for
      * @return the index of the first occurrence of the specified element in the list,
      * or -1 if not found
@@ -319,6 +331,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
     /**
      * Returns the index of the last occurrence of the specified element in the list,
      * or -1 if the list does not contain the element.
+     *
      * @param o the element to search for
      * @return the index of the last occurrence of the specified element in the list,
      * or -1 if not found
@@ -347,6 +360,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Checks if the list contains the specified element.
+     *
      * @param o the element to search for
      * @return true if the list contains the specified element, false otherwise
      */
@@ -362,6 +376,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Returns the number of elements in the list.
+     *
      * @return the number of elements in the list
      */
     @Override
@@ -371,6 +386,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Checks if the list is empty.
+     *
      * @return true if the list is empty, false otherwise
      */
     @Override
@@ -380,6 +396,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Returns a string representation of the list.
+     *
      * @return a string representation of the list
      */
     @Override
@@ -398,6 +415,7 @@ public class MyArrayList<E> implements Iterable<E>, MyList<E> {
 
     /**
      * Returns an iterator over the elements in the list.
+     *
      * @return an iterator over the elements in the list
      */
     @Override

@@ -7,23 +7,23 @@ import java.util.*;
  */
 public class MyTestList {
     /**
-     * Test result messages and default sizes
+     * Test result messages if test passed
      */
     private static final String TEST_PASSED = "Test passed: ";
     /**
-     * Test result messages and default sizes
+     * Test result messages if test failed
      */
     private static final String TEST_FAILED = "Test FAILED: ";
     /**
-     * Default size for testing
+     * Default size of the list for testing
      */
     private static final int DEFAULT_SIZE = 4;
     /**
-     * Maximum size for testing
+     * Maximum size of the list for testing
      */
     private static final int MAXIMUM_SIZE = 12;
     /**
-     * Test string constant
+     * Test string constant for test
      */
     private static final String TEST_STRING = "TEST";
 
@@ -63,6 +63,7 @@ public class MyTestList {
         testIterator(initArrayList(MAXIMUM_SIZE));
 
         testDescendingIterator();
+
         testQueue();
         testStack();
     }
@@ -76,10 +77,10 @@ public class MyTestList {
         String testName = "add() & add(index) & addLast() & addFirst(): " + myList.getClass().getSimpleName();
         int index = 1;
         String expectedString = TEST_STRING;
-        myList.addFirst(null);
-        myList.addLast(TEST_STRING);
         myList.add(index, expectedString);
         String actualString = myList.get(index);
+        myList.addFirst(null);
+        myList.addLast(TEST_STRING);
         if (myList.getFirst() == null &&
                 TEST_STRING.equals(myList.getLast()) &&
                 actualString.equals(expectedString)) {
@@ -104,83 +105,160 @@ public class MyTestList {
      * @param myList - the MyList instance to test
      */
     private static void testAddAllToString(MyList<String> myList) {
-        String testName = "addAll() & addAll(index) & toString() & updateCapacity(): " + myList.getClass().getSimpleName();
-
-        ArrayList<String> expectedList = new ArrayList<>();
-        ArrayList<String> arrayList = new ArrayList<>();
-        MyLinkedList<String> newLinkedList = new MyLinkedList<>();
-        int index = 0;
+        String testName = "addAll() & addAll(index) & toString() & updateCapacity(): " + myList.getClass().getSimpleName();// TODO toString - okremo
+        ArrayList<Boolean> testResult = new ArrayList<>();
         // 1
-        index++;
-        if (myList.addAll(0, arrayList)) {
-            printFAIL(testName + " #" + index);
-            return;
-        }
+        testResult.add(testAddAllSize(myList, testName));
         // 2
-        index++;
-        for (int i = 0; i < myList.size(); i++) {
-            expectedList.add(String.valueOf(i));
-            arrayList.add(String.valueOf(i));
-        }
-        newLinkedList.addAll(0, arrayList);
-        if (!isMyListValid(newLinkedList, arrayList)) {
-            printFAIL(testName + " #" + index);
-            return;
-        }
+        testResult.add(testAddCollectionEmptyToStart(myList, testName));
         // 3
-        index++;
-        myList.addAll(0, arrayList);
-        expectedList.addAll(0, arrayList);
-        if (!isMyListValid(myList, expectedList)) {
-            printFAIL(testName + " #" + index);
-            return;
-        }
+        testResult.add(testAddCollectionToStart(myList, testName));
         // 4
-        index++;
-        myList.addAll(arrayList);
-        expectedList.addAll(arrayList);
-        if (!isMyListValid(myList, expectedList)) {
-            printFAIL(testName + " #" + index);
-            return;
-        }
+        testResult.add(testAddCollectionAtFinish(myList, testName));
         // 5
-        index++;
-        myList.addAll(myList.size() / 2, arrayList);
-        expectedList.addAll(expectedList.size() / 2, arrayList);
-        if (!isMyListValid(myList, expectedList)) {
-            printFAIL(testName + " #" + index);
-            return;
-        }
+        testResult.add(testAddCollectionToMiddle(myList, testName));
         // 6
-        index++;
-        myList.addAll(myList.size() - 1, arrayList);
-        expectedList.addAll(expectedList.size() - 1, arrayList);
-        if (!isMyListValid(myList, expectedList)) {
-            printFAIL(testName + " #" + index);
-            return;
-        }
+        testResult.add(testAddCollectionToLastElement(myList, testName));
         // 7
-        index++;
-        boolean exceptionTest8 = false;
-        try {
-            myList.addAll(myList.size() + 1, arrayList);
-        } catch (IndexOutOfBoundsException e) {
-            exceptionTest8 = true;
-        }
+        testResult.add(testOutOfBounds(myList, testName, myList.size() + 1));
         // 8
-        index++;
-        boolean exceptionTest9 = false;
+        testResult.add(testOutOfBounds(myList, testName, -1));
+        for (boolean result : testResult) {
+            if (!result) {
+                return;
+            }
+        }
+        printPASS(testName);
+    }
+
+    private static boolean testOutOfBounds(MyList<String> myList, String testName, int index) {
+        ArrayList<String> collectionToAdd = createTestCollection();
+        boolean resultTest = false;
         try {
-            myList.addAll(-1, arrayList);
+            myList.addAll(index, collectionToAdd);
         } catch (IndexOutOfBoundsException e) {
-            exceptionTest9 = true;
+            resultTest = true;
         }
-        if (!exceptionTest8 || !exceptionTest9) {
-            String testNumber = !exceptionTest8 ? " #7" : " #" + index;
-            printFAIL(testName + testNumber);
-        } else {
-            printPASS(testName);
+        if (!resultTest) {
+            printFAIL(testName + ": test IndexOutOfBoundsException incorrect");
         }
+        return resultTest;
+    }
+
+    private static boolean testAddAllSize(MyList<String> myList, String testName) {
+        ArrayList<String> collectionToAdd = createTestCollection();
+        int requiredNewSize = collectionToAdd.size() + myList.size();
+        if (!myList.addAll(collectionToAdd)) {
+            printFAIL(testName + ": AddAll() incorrect");
+            return false;
+        }
+        if (myList.size() != requiredNewSize) {
+            printFAIL(testName + ": Size incorrect");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean testAddCollectionToLastElement(MyList<String> myList, String testName) {
+        ArrayList<String> collectionToAdd = createTestCollection();
+        testName += " - " + getCurrentMethodName();
+        int indexToInput = myList.size() - 1;
+        return testAddCollection(myList, collectionToAdd, testName, indexToInput);
+    }
+
+
+    private static boolean testAddCollectionEmptyToStart(MyList<String> myList, String testName) {
+        ArrayList<String> collectionToAdd = new ArrayList<>();
+        if (myList.addAll(0, collectionToAdd)) {
+            printFAIL(testName);
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean testAddCollectionToStart(MyList<String> myList, String testName) {
+        ArrayList<String> collectionToAdd = createTestCollection();
+        testName += " - " + getCurrentMethodName();
+        int indexToInput = 0;
+
+        return testAddCollection(myList, collectionToAdd, testName, indexToInput);
+    }
+
+    private static boolean testAddCollectionToMiddle(MyList<String> myList, String testName) {
+        ArrayList<String> collectionToAdd = createTestCollection();
+        int indexToInput = DEFAULT_SIZE / 2;
+        testName += " - " + getCurrentMethodName();
+        return testAddCollection(myList, collectionToAdd, testName, indexToInput);
+    }
+
+    private static boolean testAddCollectionAtFinish(MyList<String> myList, String testName) {
+        testName += " - " + getCurrentMethodName();
+        int indexToInput = myList.size();
+        ArrayList<String> collectionToAdd = createTestCollection();
+        return testAddCollection(myList, collectionToAdd, testName, indexToInput);
+    }
+
+    private static boolean testAddCollection(MyList<String> myList,
+                                             ArrayList<String> collectionToAdd,
+                                             String testName,
+                                             int indexToInput) {
+        if (indexToInput > myList.size() || indexToInput < 0) {
+            return false;
+        }
+
+        String expectedFirstElement = (!collectionToAdd.isEmpty() && indexToInput == 0)
+                ? collectionToAdd.getFirst()
+                : (!myList.isEmpty() ? myList.getFirst() : null);
+        String expectedLastElement = (!collectionToAdd.isEmpty() && indexToInput == myList.size())
+                ? collectionToAdd.getLast()
+                : (!myList.isEmpty() ? myList.getLast() : null);
+        String expectedElementAfterAddedCollection = (!myList.isEmpty() && indexToInput != myList.size())
+                ? myList.get(indexToInput)
+                : null;
+        String expectedElementAtIndex = !collectionToAdd.isEmpty()
+                ? collectionToAdd.getFirst()
+                : (!myList.isEmpty() ? myList.get(indexToInput) : null);
+        int requiredNewSize = collectionToAdd.size() + myList.size();
+        boolean isIndexAtFinish = (indexToInput == myList.size());
+
+        myList.addAll(indexToInput, collectionToAdd);
+
+        boolean isSizeCorrect = (myList.size() == requiredNewSize);
+        boolean isFirstCorrect = myList.getFirst().equals(expectedFirstElement);
+        boolean isLastCorrect = myList.get(myList.size() - 1).equals(expectedLastElement);
+        boolean isElementAtIndexCorrect = myList.get(indexToInput).equals(expectedElementAtIndex);
+        boolean isElementAfterIndexCorrect = isIndexAtFinish ||
+                myList.get(indexToInput + collectionToAdd.size()).equals(expectedElementAfterAddedCollection);
+        return checkTestConditions(testName,
+                isFirstCorrect,
+                isLastCorrect,
+                isElementAtIndexCorrect,
+                isElementAfterIndexCorrect,
+                isSizeCorrect);
+    }
+
+    private static boolean checkTestConditions(String testName,
+                                               boolean... conditions) {
+        String[] conditionsNames = {"First Element",
+                "Last element",
+                "Element at index",
+                "Element after index",
+                "Size"};
+        for (int i = 0; i < conditions.length; i++) {
+            if (!conditions[i]) {
+                printFAIL(testName + ": " + conditionsNames[i] + " incorrect");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static ArrayList<String> createTestCollection() {
+        ArrayList<String> list = new ArrayList<>();
+        for (int i = MAXIMUM_SIZE; i > 0; i--) {
+            list.add(String.valueOf(i));
+        }
+        return list;
     }
 
     /**
@@ -297,6 +375,7 @@ public class MyTestList {
         } else {
             printFAIL(testName);
         }
+
     }
 
     /**
@@ -305,18 +384,28 @@ public class MyTestList {
     private static void testDescendingIterator() {
         String testName = "DescendingIterator(): MyLinkedList";
         MyLinkedList<String> myList = new MyLinkedList<>();
-        LinkedList<String> expectedList = new LinkedList<>();
         for (int i = 0; i < MAXIMUM_SIZE; i++) {
             myList.add(String.valueOf(i));
-            expectedList.add(String.valueOf(i));
         }
         Iterator<String> myIterator = myList.descendingIterator();
-        Iterator<String> expectedIterator = expectedList.descendingIterator();
+        int elementToRemove = 0;
+        int i = 0;
         while (myIterator.hasNext()) {
-            if (myIterator.next().equals(expectedIterator.next())) {
+            i++;
+            myIterator.next();
+            if (i == MAXIMUM_SIZE / 2) {
+                elementToRemove = i;
                 myIterator.remove();
-                expectedIterator.remove();
             }
+        }
+        if (myList.contains(String.valueOf(elementToRemove))) {
+            printFAIL(testName);
+            return;
+        }
+        myIterator = myList.descendingIterator();
+        while (myIterator.hasNext()) {
+            myIterator.next();
+            myIterator.remove();
         }
         if (myList.isEmpty()) {
             printPASS(testName);
@@ -425,5 +514,9 @@ public class MyTestList {
      */
     public static void printFAIL(String testName) {
         System.err.println(TEST_FAILED + testName);
+    }
+
+    private static String getCurrentMethodName() {
+        return Thread.currentThread().getStackTrace()[2].getMethodName();
     }
 }

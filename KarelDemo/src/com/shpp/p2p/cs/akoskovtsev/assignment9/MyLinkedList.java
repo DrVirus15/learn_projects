@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
- * A simple implementation of a doubly linked list data structure.
+ * An implementation of a doubly linked list data structure.
  *
  * @param <E> the type of elements in this list
  */
@@ -24,7 +24,6 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
         public Link(E data) {
             value = data;
         }
-
     }
 
     /**
@@ -73,7 +72,7 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
             newLink.previous = last;
             last = newLink;
         } else {
-            for (int i = 1; i < index; i++) {
+            for (int i = 0; i < index - 1; i++) {
                 current = current.next;
             }
             newLink.previous = current;
@@ -171,36 +170,36 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
         } else if (index == 0) {
             connectList(null, first, c);
         } else {
-            Link nextNode = first;
+            Link nextLink = first;
             for (int i = 0; i < index; i++) {
-                nextNode = nextNode.next;
+                nextLink = nextLink.next;
             }
-            connectList(nextNode.previous, nextNode, c);
+            connectList(nextLink.previous, nextLink, c);
         }
         return true;
     }
 
     /**
-     * Connects a collection of elements between two nodes in the linked list.
+     * Connects a collection of elements between two elements in the linked list.
      *
-     * @param prevNode - the node before the collection
-     * @param nextNode - the node after the collection
+     * @param prevLink - the link before the collection
+     * @param nextLink - the link after the collection
      * @param c        - collection of elements to add
      */
-    private void connectList(Link prevNode, Link nextNode, Collection<? extends E> c) {
+    private void connectList(Link prevLink, Link nextLink, Collection<? extends E> c) {
         for (E element : c) {
             Link newLink = new Link(element);
-            if (prevNode == null) {
+            if (prevLink == null) {
                 first = newLink;
-                first.next = nextNode;
-                nextNode.previous = first;
-                prevNode = first;
+                first.next = nextLink;
+                nextLink.previous = first;
+                prevLink = first;
             } else {
-                nextNode.previous = newLink;
-                newLink.next = nextNode;
-                prevNode.next = newLink;
-                newLink.previous = prevNode;
-                prevNode = newLink;
+                nextLink.previous = newLink;
+                newLink.next = nextLink;
+                prevLink.next = newLink;
+                newLink.previous = prevLink;
+                prevLink = newLink;
             }
             size++;
         }
@@ -461,7 +460,7 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
      */
     @Override
     public boolean isEmpty() {
-        return first == null;
+        return size == 0;
     }
 
     /**
@@ -490,31 +489,32 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
      * @return an iterator over the elements in the linked list
      */
     @Override
-    public Iterator<E> iterator() {
+    public Iterator<E> iterator() { // TODO realise Link Indexes
         return new Iterator<>() {
-            private int index = 0;
-            private int previousIndex = -1;
+            private Link current = first;
+            private Link prevLink = null;
 
             /**
              * Checks if there are more elements to iterate over.
-             * @return true if there are more elements, false otherwise
+             * @return true if there are more elements, false otherwise.
              */
             @Override
             public boolean hasNext() {
-                return index < size;
+                return current != null;
             }
 
             /**
              * Returns the next element in the iteration.
-             * @return the next element
+             * @return the next element.
              */
             @Override
             public E next() {
-                if (index >= size) {
+                if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                previousIndex = index;
-                return get(index++);
+                prevLink = current;
+                current = current.next;
+                return prevLink.value;
             }
 
             /**
@@ -522,12 +522,24 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
              */
             @Override
             public void remove() {
-                if (previousIndex == -1) {
+                if (prevLink == null) {
                     throw new IllegalStateException();
                 }
-                MyLinkedList.this.remove(previousIndex);
-                index = previousIndex;
-                previousIndex = -1;
+                if (size == 1) {
+                    first = null;
+                    last = null;
+                } else if (prevLink == first) {
+                    first = current;
+                    first.previous = null;
+                } else if (prevLink == last) {
+                    last = prevLink.previous;
+                    last.next = null;
+                } else {
+                    current.previous = prevLink.previous;
+                    prevLink.previous.next = current;
+                }
+                prevLink = null;
+                size--;
             }
         };
     }
@@ -539,8 +551,8 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
      */
     public Iterator<E> descendingIterator() {
         return new Iterator<>() {
-            private int index = size - 1;
-            private int previousIndex = -1;
+            private Link current = last;
+            private Link prevLink = null;
 
             /**
              * Checks if there are more elements to iterate over in reverse order.
@@ -548,7 +560,7 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
              */
             @Override
             public boolean hasNext() {
-                return index >= 0;
+                return current != null;
             }
 
             /**
@@ -557,11 +569,12 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
              */
             @Override
             public E next() {
-                if (index < 0) {
+                if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                previousIndex = index;
-                return get(index--);
+                prevLink = current;
+                current = current.previous;
+                return prevLink.value;
             }
 
             /**
@@ -569,11 +582,24 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
              */
             @Override
             public void remove() {
-                if (previousIndex == -1) {
+                if (prevLink == null) {
                     throw new IllegalStateException();
                 }
-                MyLinkedList.this.remove(previousIndex);
-                previousIndex = -1;
+                if(size == 1){
+                    first = null;
+                    last = null;
+                }else if(prevLink == first){
+                    first = prevLink.next;
+                    first.previous = null;
+                } else if(prevLink == last){
+                    last = current;
+                    last.next = null;
+                } else {
+                    prevLink.previous.next = prevLink.next;
+                    prevLink.next.previous = prevLink.previous;
+                }
+                prevLink = null;
+                size--;
             }
         };
     }

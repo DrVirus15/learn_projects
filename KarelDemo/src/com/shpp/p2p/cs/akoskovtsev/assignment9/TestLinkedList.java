@@ -17,9 +17,9 @@ public class TestLinkedList {
         MyLinkedList<String> myArrayListTest = initTestList(DEFAULT_SIZE);
 
 
-        testToString();
-        testAddIndex();
-        testGetSet();
+//        testToString();
+//        testAddIndex();
+//        testGetSet();
 //        testGetLastGetFirst();
 //        testRemove();
 //        testRemoveLastFirst();
