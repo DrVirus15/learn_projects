@@ -20,3 +20,10 @@
             - винесена обробка кінця виразу в метод handleEndOfExpression(..)
      - замінено LinkedList на ArrayDeque.
      - замінено виклик методу makeBaseOperation(..) та обробка операндів
+
+Зміни в Assignment11Part1:
+    - видалено класи-оператори які не відносяться до умови.
+    - замінено LinkedList на ArrayDeque.
+    - видалено метод logCalculation(..)
+    - метод setVariables(..) замінено на checkAndPushVariable(..) для коректної роботи з ArrayDeque.
+    -
