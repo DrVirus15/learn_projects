@@ -18,6 +18,7 @@
                    - додано метод addAllOperatorsToRPN - виштовхує оператор зі стека в RPN
                                                          і повертає наступний елемент стека
             - винесена обробка кінця виразу в метод handleEndOfExpression(..)
+            - додано метод popRemainingOperators(..) для додавання всіх операторів до стека які залишились.
      - замінено LinkedList на ArrayDeque.
      - замінено виклик методу makeBaseOperation(..) та обробка операндів
 
@@ -26,4 +27,7 @@
     - замінено LinkedList на ArrayDeque.
     - видалено метод logCalculation(..)
     - метод setVariables(..) замінено на checkAndPushVariable(..) для коректної роботи з ArrayDeque.
-    -
+
+    - змінено метод parse:
+        - винесена обробка унарного мінуса в метод handleUnaryMinus(..)
+        - додано метод popRemainingOperators(..) для додавання всіх операторів до стека які залишились.

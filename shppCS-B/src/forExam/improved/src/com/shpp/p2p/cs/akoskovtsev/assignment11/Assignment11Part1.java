@@ -3,7 +3,6 @@ package forExam.improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11;
 import forExam.improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11.operators.*;
 
 import java.util.*;
-
 /**
  * This program evaluates mathematical expressions provided as command-line arguments.
  * Supported operators: +, -, *, /, ^, (unary minus)
@@ -137,37 +136,49 @@ public class Assignment11Part1 {
     }
 
     /**
-     * Parses the formula string into Reverse Polish Notation (RPN) using the Shunting Yard algorithm.
+     * Parses the expression string into Reverse Polish Notation (RPN) using the Shunting Yard algorithm.
      *
-     * @param formula - the input formula as a string
+     * @param expression - the input expression as a string
      * @return - the RPN expression as a linked list of tokens
      */
-    private static Deque<String> parse(String formula) {
+    private static Deque<String> parse(String expression) {
         Deque<String> rpn = new ArrayDeque<>();// Output list for RPN
         Deque<String> opStack = new ArrayDeque<>();      // Stack for operators
         StringBuilder operand = new StringBuilder();// To build multi-character operands
-        for (int i = 0; i < formula.length(); i++) {
-            if (operand.isEmpty() && formula.charAt(i) == '-') { // Handle unary minus
-                opStack.push("~");
+        for (int i = 0; i < expression.length(); i++) {
+            char symbol = expression.charAt(i);
+            boolean isUnaryMinus = handleUnaryMinus(operand, symbol, opStack);
+            if(isUnaryMinus){
                 continue;
             }
-            String token = String.valueOf(formula.charAt(i));
+            String token = String.valueOf(symbol);
             if (isOperator(token)) {
                 addToRPN(rpn, operand, opStack);
                 handleOperator(token, opStack, rpn);
             } else {
                 operand.append(token);
             }
-            if (i == formula.length() - 1 && !operand.isEmpty()) {
+            if (i == expression.length() - 1 && !operand.isEmpty()) {
                 addToRPN(rpn, operand, opStack);
             }
         }
-        while (!opStack.isEmpty()) {
-            rpn.add(opStack.pop());
-        }
+        popRemainingOperators(rpn, opStack);
         return rpn;
     }
 
+    private static boolean handleUnaryMinus(StringBuilder operand, char symbol, Deque<String> opStack){
+        if (operand.isEmpty() && symbol == '-') { // Handle unary minus
+            opStack.push("~");
+            return true;
+        }
+        return false;
+    }
+
+    private static void popRemainingOperators(Deque<String> rpn, Deque<String> opStack){
+        while (!opStack.isEmpty()) {
+            rpn.add(opStack.pop());
+        }
+    }
     /**
      * Handles the operator according to the Shunting Yard algorithm.
      *
