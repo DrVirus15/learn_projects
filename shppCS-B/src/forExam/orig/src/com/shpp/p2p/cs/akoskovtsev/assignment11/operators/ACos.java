@@ -1,5 +1,6 @@
 package forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.operators;
 
+
 import forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.Operator;
 
 /**
@@ -7,7 +8,7 @@ import forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.Operator;
  */
 public class ACos implements Operator {
     /**
-     * Returns the string representation of the operator.
+     *  Returns the string representation of the operator.
      */
     @Override
     public String getOperator() {
@@ -40,7 +41,6 @@ public class ACos implements Operator {
 
     /**
      * Calculates the arccosine of the given operand.
-     *
      * @param operands An array containing a single operand.
      * @return The arccosine of the operand.
      */

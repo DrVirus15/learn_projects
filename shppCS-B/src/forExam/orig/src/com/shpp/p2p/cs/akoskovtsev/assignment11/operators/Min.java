@@ -2,24 +2,21 @@ package forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.operators;
 
 import forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.Operator;
 
-/**
- * The class implements the "asin" operator, which calculates the arc sine of a number.
- */
-public class ASin implements Operator {
+public class Min implements Operator {
     /**
      * Returns the operator symbol.
      */
     @Override
     public String getOperator() {
-        return "asin";
+        return "min";
     }
 
     /**
-     * Returns the number of operands required by the operator.
+     * Returns the number of operands the operator works with.
      */
     @Override
     public int getOperandCount() {
-        return 1;
+        return 2;
     }
 
     /**
@@ -39,12 +36,12 @@ public class ASin implements Operator {
     }
 
     /**
-     * Calculates the arcsine of the given operand.
-     * @param operands The operands for the operation.
-     * @return The arcsine of the operand.
+     * Calculates the minimum of two operands.
+     * @param operands The operands to compare.
+     * @return The minimum value among the operands.
      */
     @Override
     public double calculate(double... operands) {
-        return Math.asin(operands[0]);
+        return Math.min(operands[0], operands[1]);
     }
 }

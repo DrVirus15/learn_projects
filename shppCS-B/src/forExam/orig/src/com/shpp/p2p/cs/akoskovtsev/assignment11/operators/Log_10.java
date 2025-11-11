@@ -37,7 +37,6 @@ public class Log_10 implements Operator {
 
     /**
      * Calculates the base-10 logarithm of the given operand.
-     *
      * @param operands An array containing a single operand.
      * @return The base-10 logarithm of the operand.
      */

@@ -37,7 +37,6 @@ public class Tan implements Operator {
 
     /**
      * Calculates the tangent of the given operand.
-     *
      * @param operands The operands for the operation.
      * @return The tangent of the operand.
      */

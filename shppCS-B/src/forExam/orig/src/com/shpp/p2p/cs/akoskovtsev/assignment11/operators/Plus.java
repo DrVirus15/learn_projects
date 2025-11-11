@@ -37,7 +37,6 @@ public class Plus implements Operator {
 
     /**
      * Calculates the sum of the given operands.
-     *
      * @param operands The operands for the operation.
      * @return The result of adding the operands.
      */

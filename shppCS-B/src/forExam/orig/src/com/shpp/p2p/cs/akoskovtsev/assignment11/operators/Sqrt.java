@@ -19,28 +19,16 @@ public class Sqrt implements Operator {
         return 1;
     }
 
-    /**
-     * Returns the precedence level of the operator.
-     */
     @Override
     public int getPrecedence() {
         return 3;
     }
 
-    /**
-     * Indicates whether the operator is left associative.
-     */
     @Override
     public boolean isLeftAssociativity() {
         return false;
     }
 
-    /**
-     * Calculates the square root of the given operand (in radians).
-     *
-     * @param operands The operands for the operation.
-     * @return The square root of the operand.
-     */
     @Override
     public double calculate(double... operands) {
         return Math.sqrt(operands[0]);

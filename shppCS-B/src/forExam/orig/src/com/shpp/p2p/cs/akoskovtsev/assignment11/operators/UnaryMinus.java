@@ -37,7 +37,6 @@ public class UnaryMinus implements Operator {
 
     /**
      * Performs the unary minus operation on the given operand.
-     *
      * @param operands The operands for the operation.
      * @return The negated value of the operand.
      */

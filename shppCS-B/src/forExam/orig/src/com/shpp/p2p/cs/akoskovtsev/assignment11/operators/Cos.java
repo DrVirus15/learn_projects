@@ -37,7 +37,6 @@ public class Cos implements Operator {
 
     /**
      * Performs the cosine operation on the given operand.
-     *
      * @param operands The operands for the operation.
      */
     @Override

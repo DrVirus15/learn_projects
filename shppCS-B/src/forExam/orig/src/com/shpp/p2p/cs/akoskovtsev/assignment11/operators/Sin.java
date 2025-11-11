@@ -37,7 +37,6 @@ public class Sin implements Operator {
 
     /**
      * Calculates the sine of the given operand (in radians).
-     *
      * @param operands The operands for the operation.
      * @return The sine of the operand.
      */

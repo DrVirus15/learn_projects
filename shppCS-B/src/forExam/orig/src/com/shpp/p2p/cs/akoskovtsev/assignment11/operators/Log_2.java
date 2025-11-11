@@ -37,7 +37,6 @@ public class Log_2 implements Operator {
 
     /**
      * Calculates the base-2 logarithm of the given operand.
-     *
      * @param operands An array containing a single operand.
      * @return The base-2 logarithm of the operand.
      */

@@ -10,9 +10,16 @@ import java.util.*;
  * Example usage: java Assignment10Part1 2^3*2+5^2^-2 a=3 b=4
  */
 public class Assignment10Part1 {
-
+    /**
+     * Operators supported by the calculator.
+     */
     private static final String OPERATORS = "^*/+-";
 
+    /**
+     * Main method to run the program.
+     *
+     * @param args Command-line arguments: the first argument is the expression, then variables in the format var=value.
+     */
     public static void main(String[] args) {
         if (args == null || args.length == 0 || args[0] == null || args[0].isEmpty()) return;
         String expression = args[0].replace(" ", "");
@@ -20,21 +27,28 @@ public class Assignment10Part1 {
         if (args.length > 1) {
             try {
                 variables = parseVariables(args);
-            } catch (StringIndexOutOfBoundsException | IllegalArgumentException e) {
-                System.err.println("Exception while parse variables: " + e.getMessage());
+            } catch (StringIndexOutOfBoundsException | NullPointerException | IllegalArgumentException e) {
+                System.out.println("Exception while parse variables: " + e.getMessage());
             }
         }
         double result = 0;
         try {
             result = calculate(expression, variables);
         } catch (NumberFormatException | EmptyStackException | ArithmeticException e) {
-            System.err.println("Exception while evaluating expression: " + e.getMessage());
+            System.out.println("Exception while evaluating expression: " + e.getMessage());
         }
         System.out.print(result);
     }
 
-    private static Map<String, Double> parseVariables(String[] args) throws StringIndexOutOfBoundsException,
-            IllegalArgumentException {
+    /**
+     * Parses variables from command-line arguments.
+     *
+     * @param args - command-line arguments
+     * @return - a map of variable names to their double values
+     * @throws StringIndexOutOfBoundsException - if the variable format does not contain '='
+     * @throws IllegalArgumentException        - if the variable format is incorrect
+     */
+    private static Map<String, Double> parseVariables(String[] args) {
         Map<String, Double> variables = new HashMap<>();
         for (int i = 1; i < args.length; i++) {
             String variable = args[i].replace(" ", "");
@@ -51,8 +65,10 @@ public class Assignment10Part1 {
     private static double calculate(String expression, Map<String, Double> variables)
             throws NumberFormatException, EmptyStackException, ArithmeticException {
         Deque<String> rpn = parse(expression);
-        Deque<String> rpnWithoutVariables = checkAndPushVariable(variables, rpn);
-        return calculateRPN(rpnWithoutVariables);
+        if (!variables.isEmpty()) {
+            rpn = checkAndPushVariable(variables, rpn);
+        }
+        return calculateRPN(rpn);
     }
 
 
@@ -75,8 +91,7 @@ public class Assignment10Part1 {
         return tokens.pop();
     }
 
-    private static void performTheOperation(String token, Deque<Double> tokens) throws EmptyStackException,
-            ArithmeticException {
+    private static void performTheOperation(String token, Deque<Double> tokens) throws ArithmeticException {
         if (tokens.size() < 2) throw new EmptyStackException();
         tokens.push(makeBaseOperation(token, tokens.pop(), tokens.pop()));
         if (Objects.requireNonNull(tokens.peek()).isNaN() || tokens.peek().isInfinite()) {
@@ -204,9 +219,7 @@ public class Assignment10Part1 {
         operand.setLength(0);
     }
 
-    private static double makeBaseOperation(String operator, double rightOperand, double leftOperand)
-            throws ArithmeticException {
-        // handle division by zero
+    private static double makeBaseOperation(String operator, double rightOperand, double leftOperand) {
         if (operator.equals("/") && rightOperand == 0) {
             throw new ArithmeticException("Mathematical error: Division by zero.");
         }

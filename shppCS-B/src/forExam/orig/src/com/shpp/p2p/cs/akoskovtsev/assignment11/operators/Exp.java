@@ -38,7 +38,6 @@ public class Exp implements Operator {
 
     /**
      * Performs the exponential operation on the given operand.
-     *
      * @param operands The operands for the operation.
      * @return The result of the exponential operation.
      */

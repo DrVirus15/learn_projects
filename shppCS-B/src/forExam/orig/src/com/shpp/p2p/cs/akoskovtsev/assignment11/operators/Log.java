@@ -37,7 +37,6 @@ public class Log implements Operator {
 
     /**
      * Calculates the natural logarithm of the given operand.
-     *
      * @param operands The operands for the operation.
      * @return The natural logarithm of the operand.
      */

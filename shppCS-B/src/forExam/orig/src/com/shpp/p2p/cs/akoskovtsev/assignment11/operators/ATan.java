@@ -1,7 +1,7 @@
 package forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.operators;
 
-import forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.Operator;
 
+import forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.Operator;
 /**
  * The class implements the "atan" operator for calculating the arctangent of a number.
  */
@@ -40,7 +40,6 @@ public class ATan implements Operator {
 
     /**
      * Calculates the arctangent of the given operand.
-     *
      * @param operands An array containing a single operand.
      * @return The arctangent of the operand.
      */

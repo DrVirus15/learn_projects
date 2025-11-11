@@ -30,18 +30,16 @@ public class Div implements Operator {
     /**
      * Indicates whether the operator is left associative.
      */
-    @Override
-    public boolean isLeftAssociativity() {
+   @Override
+   public boolean isLeftAssociativity(){
         return true;
-    }
+   }
 
-    /**
-     * Performs division of two operands.
-     *
-     * @param operands an array containing two operands
-     * @return the result of dividing the first operand by the second
-     * @throws ArithmeticException if the second operand is zero
-     */
+   /** Performs division of two operands.
+    * @param operands an array containing two operands
+    * @return the result of dividing the first operand by the second
+    * @throws ArithmeticException if the second operand is zero
+    */
     @Override
     public double calculate(double... operands) {
         if (operands[1] == 0) {

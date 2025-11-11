@@ -37,7 +37,6 @@ public class Multiply implements Operator {
 
     /**
      * Performs the operation on the given operands.
-     *
      * @param operands The operands for the operation.
      * @return The result of multiplying the operands.
      */

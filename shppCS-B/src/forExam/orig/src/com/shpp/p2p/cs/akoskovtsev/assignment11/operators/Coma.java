@@ -2,20 +2,17 @@ package forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.operators;
 
 import forExam.orig.src.com.shpp.p2p.cs.akoskovtsev.assignment11.Operator;
 
-/**
- * The class implements the "asin" operator, which calculates the arc sine of a number.
- */
-public class ASin implements Operator {
+public class Coma implements Operator {
     /**
      * Returns the operator symbol.
      */
     @Override
     public String getOperator() {
-        return "asin";
+        return ",";
     }
 
     /**
-     * Returns the number of operands required by the operator.
+     * Returns the number of operands the operator works with.
      */
     @Override
     public int getOperandCount() {
@@ -27,7 +24,7 @@ public class ASin implements Operator {
      */
     @Override
     public int getPrecedence() {
-        return 4;
+        return 0;
     }
 
     /**
@@ -39,12 +36,10 @@ public class ASin implements Operator {
     }
 
     /**
-     * Calculates the arcsine of the given operand.
-     * @param operands The operands for the operation.
-     * @return The arcsine of the operand.
+     * This method is not applicable for coma and returns operand[0].
      */
     @Override
     public double calculate(double... operands) {
-        return Math.asin(operands[0]);
+        return operands[0];
     }
 }

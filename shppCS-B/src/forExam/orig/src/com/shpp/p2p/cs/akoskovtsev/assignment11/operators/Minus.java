@@ -37,7 +37,6 @@ public class Minus implements Operator {
 
     /**
      * Performs the subtraction operation on the provided operands.
-     *
      * @param operands The operands for the operation.
      * @return The result of subtracting the second operand from the first.
      */

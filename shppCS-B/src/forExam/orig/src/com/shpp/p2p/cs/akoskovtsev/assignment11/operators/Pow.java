@@ -37,7 +37,6 @@ public class Pow implements Operator {
 
     /**
      * Calculates the result of raising the first operand to the power of the second operand.
-     *
      * @param operands The operands for the operation.
      * @return The result of the exponentiation.
      */
