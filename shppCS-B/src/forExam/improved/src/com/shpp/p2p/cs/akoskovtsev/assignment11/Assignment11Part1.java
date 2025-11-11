@@ -3,6 +3,7 @@ package forExam.improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11;
 import forExam.improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11.operators.*;
 
 import java.util.*;
+
 /**
  * This program evaluates mathematical expressions provided as command-line arguments.
  * Supported operators: +, -, *, /, ^, (unary minus)
@@ -43,13 +44,24 @@ public class Assignment11Part1 {
      */
     public static void main(String[] args) {
         if (args == null || args.length == 0 || args[0] == null || args[0].isEmpty()) return;
+//        String expression = "15/(7-(1+1))*3-(2+(1+1))*15/(7-(200+1))*3-(2+(1+1))*(15/(7-(1+1))*3-(2+(1+1))+15/(7-(1+1))*3-(2+(1+1)))";
+        String expression = args[0].replace(" ", "").toLowerCase();
+        Map<String, Double> variables = new HashMap<>();
+        if (args.length > 1) {
+            try {
+                variables = parseVariables(args);
+            } catch (StringIndexOutOfBoundsException | IllegalArgumentException e) {
+                System.err.println("Exception while parse variables: " + e.getMessage());
+            }
+        }
 
-//        String formula = "15/(7-(1+1))*3-(2+(1+1))*15/(7-(200+1))*3-(2+(1+1))*(15/(7-(1+1))*3-(2+(1+1))+15/(7-(1+1))*3-(2+(1+1)))";
-        String formula = args[0].trim().replace(" ", "").toLowerCase(); //TODO handle args... null 0 etc.
-        Map<String, Double> variables = parseVariables(args);
-//        System.out.println(formula + " " + variables);
-        Deque<String> rpn = parse(formula); // Convert the formula to Reverse Polish Notation (RPN)
-        printResult(rpn, variables);             // Calculate and print the result
+        double result = 0;
+        try {
+            result = calculate(expression, variables);
+        } catch (NumberFormatException | EmptyStackException | ArithmeticException e) {
+            System.err.println("Exception while evaluating expression: " + e.getMessage());
+        }
+        System.out.print(result);
     }
 
     /**
@@ -58,52 +70,36 @@ public class Assignment11Part1 {
      * @param args - Command-line arguments
      * @return - Map of variable names to their values
      */
-    private static Map<String, Double> parseVariables(String[] args) {
+    private static Map<String, Double> parseVariables(String[] args) throws StringIndexOutOfBoundsException,
+            IllegalArgumentException {
         Map<String, Double> variables = new HashMap<>();
         for (int i = 1; i < args.length; i++) {
-            String parse = args[i];
-            int index = parse.indexOf('=');
-            try {
-                variables.put(parse.substring(0, index), Double.parseDouble(parse.substring(index + 1)));
-            } catch (NumberFormatException e) {
-                System.out.println("Can`t parse a variable " + parse + ".");
+            String variable = args[i].replace(" ", "");
+            int index = variable.indexOf('=');
+            if (index == -1) {
+                throw new IllegalArgumentException("Variable must be in format name=value, got: " + variable);
             }
+            variables.put(variable.substring(0, index), Double.parseDouble(variable.substring(index + 1)));
         }
         return variables;
     }
 
-    /**
-     * Prints the result of the RPN calculation.
-     *
-     * @param rpn       - the RPN expression as a stack of tokens
-     * @param variables - map of variable names to their values
-     */
-    private static void printResult(Deque<String> rpn, Map<String, Double> variables) {
-        try {
-            double result = calculateRPN(rpn, variables); //TODO перевірка на неправильну кількість дужок
-            System.out.println(result);
-        } catch (ArithmeticException e) { // Catch division by zero
-            System.out.println("Zero division error. Fix the errors in the expression.");
-        } catch (NumberFormatException e) { // Catch invalid number format
-            System.out.println("Fix the errors in the expression.");
-        } catch (EmptyStackException e) { // Catch invalid number of operands
-            System.out.println("There is no operands. Fix the errors in the expression.");
-        } catch (IllegalArgumentException e) { // Catch invalid operations resulting in Infinity or NaN
-            System.out.println("There is Infinity or NaN. Fix the errors in the expression.");
-        }
+    private static double calculate(String expression, Map<String, Double> variables)
+            throws NumberFormatException, EmptyStackException, ArithmeticException {
+        Deque<String> rpn = parse(expression);
+        rpn = checkAndPushVariable(variables, rpn);
+        return calculateRPN(rpn);
     }
 
     /**
      * Calculates the result of an expression in Reverse Polish Notation (RPN).
      *
      * @param rpn       - the RPN expression as a stack of tokens
-     * @param variables - map of variable names to their values
      * @return - the calculated result
      */
-    private static double calculateRPN(Deque<String> rpn, Map<String, Double> variables)
-            throws NumberFormatException {
+    private static double calculateRPN(Deque<String> rpn)
+            throws EmptyStackException, ArithmeticException, NumberFormatException {
         Stack<Double> tokens = new Stack<>();
-        rpn = checkAndPushVariable(variables, rpn);
         while (!rpn.isEmpty()) {
             String token = rpn.pop();
             if (isOperator(token)) {
@@ -121,9 +117,9 @@ public class Assignment11Part1 {
         for (int i = 0; i < operand.length; i++) {
             operand[operand.length - 1 - i] = tokens.pop();
         }
-        tokens.push(OPERATOR_MAP.get(token).calculate(operand)); // Perform the operation
+        tokens.push(OPERATOR_MAP.get(token).calculate(operand));
         if (tokens.peek().isInfinite() || tokens.peek().isNaN()) {
-            throw new IllegalArgumentException();
+            throw new ArithmeticException();
         }
     }
 
@@ -144,13 +140,13 @@ public class Assignment11Part1 {
      * @return - the RPN expression as a linked list of tokens
      */
     private static Deque<String> parse(String expression) {
-        Deque<String> rpn = new ArrayDeque<>();// Output list for RPN
-        Deque<String> opStack = new ArrayDeque<>();      // Stack for operators
-        StringBuilder operand = new StringBuilder();// To build multi-character operands
+        Deque<String> rpn = new ArrayDeque<>();
+        Deque<String> opStack = new ArrayDeque<>();
+        StringBuilder operand = new StringBuilder();
         for (int i = 0; i < expression.length(); i++) {
             char symbol = expression.charAt(i);
             boolean isUnaryMinus = handleUnaryMinus(operand, symbol, opStack);
-            if(isUnaryMinus){
+            if (isUnaryMinus) {
                 continue;
             }
             String token = String.valueOf(symbol);
@@ -168,19 +164,20 @@ public class Assignment11Part1 {
         return rpn;
     }
 
-    private static boolean handleUnaryMinus(StringBuilder operand, char symbol, Deque<String> opStack){
-        if (operand.isEmpty() && symbol == '-') { // Handle unary minus
+    private static boolean handleUnaryMinus(StringBuilder operand, char symbol, Deque<String> opStack) {
+        if (operand.isEmpty() && symbol == '-') {
             opStack.push("~");
             return true;
         }
         return false;
     }
 
-    private static void popRemainingOperators(Deque<String> rpn, Deque<String> opStack){
+    private static void popRemainingOperators(Deque<String> rpn, Deque<String> opStack) {
         while (!opStack.isEmpty()) {
             rpn.add(opStack.pop());
         }
     }
+
     /**
      * Handles the operator according to the Shunting Yard algorithm.
      *
@@ -190,7 +187,7 @@ public class Assignment11Part1 {
      */
     private static void handleOperator(String token, Deque<String> opStack, Deque<String> rpn) {
         if (token.equals("(")) {
-            opStack.push(token);        // Push open bracket onto the stack
+            opStack.push(token);
             return;
         }
 
@@ -198,22 +195,22 @@ public class Assignment11Part1 {
             handleCloseBracket(opStack, rpn);
             return;
         }
-        int tokenPrecedence = OPERATOR_MAP.get(token).getPrecedence();      // Get the precedence of the current operator
-        boolean isLeftAssoc = OPERATOR_MAP.get(token).isLeftAssociativity();// Get the associativity of the current operator
+        int tokenPrecedence = OPERATOR_MAP.get(token).getPrecedence();
+        boolean isLeftAssoc = OPERATOR_MAP.get(token).isLeftAssociativity();
         while (!opStack.isEmpty()) {
-            String operator = opStack.peek();                               // Peek at the top operator on the stack
-            int topPrecedence = OPERATOR_MAP.get(operator).getPrecedence(); // Get the precedence of the operator at the top of the stack
-            if (operator.equals("(")) break;                                 // Stop if an open bracket is found
+            String operator = opStack.peek();
+            int topPrecedence = OPERATOR_MAP.get(operator).getPrecedence();
+            if (operator.equals("(")) break;
             if (!(tokenPrecedence < topPrecedence || (tokenPrecedence == topPrecedence && isLeftAssoc))) break;
-            rpn.add(opStack.pop());                                     // Pop all higher or equal precedence operators to RPN
+            rpn.add(opStack.pop());
         }
-        opStack.push(token);                                                // Push the current operator onto the stack
+        opStack.push(token);
     }
 
     private static void handleCloseBracket(Deque<String> opStack, Deque<String> rpn) {
         String lastToken = opStack.peek();
         while (!Objects.equals(lastToken, "(")) {
-            rpn.add(opStack.pop()); // Pop operators to RPN until an open bracket is found
+            rpn.add(opStack.pop());
             if (!opStack.isEmpty()) {
                 lastToken = opStack.peek();
             } else {

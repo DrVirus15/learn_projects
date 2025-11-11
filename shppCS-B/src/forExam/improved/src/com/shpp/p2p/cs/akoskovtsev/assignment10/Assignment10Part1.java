@@ -15,7 +15,7 @@ public class Assignment10Part1 {
 
     public static void main(String[] args) {
         if (args == null || args.length == 0 || args[0] == null || args[0].isEmpty()) return;
-        String formula = args[0].trim().replace(" ", "");
+        String expression = args[0].replace(" ", "");
         Map<String, Double> variables = new HashMap<>();
         if (args.length > 1) {
             try {
@@ -26,7 +26,7 @@ public class Assignment10Part1 {
         }
         double result = 0;
         try {
-            result = calculate(formula, variables);
+            result = calculate(expression, variables);
         } catch (NumberFormatException | EmptyStackException | ArithmeticException e) {
             System.err.println("Exception while evaluating expression: " + e.getMessage());
         }
@@ -56,7 +56,7 @@ public class Assignment10Part1 {
     }
 
 
-    private static double calculateRPN(Deque<String> rpn) throws EmptyStackException {
+    private static double calculateRPN(Deque<String> rpn) throws EmptyStackException, ArithmeticException {
         double unaryMinus = 1.0;
         Deque<Double> tokens = new ArrayDeque<>();
         while (!rpn.isEmpty()) {
@@ -66,7 +66,7 @@ public class Assignment10Part1 {
                 continue;
             }
             if (isOperator(token)) {
-                executeOperator(token, tokens);
+                performTheOperation(token, tokens);
             } else {
                 tokens.push(Double.parseDouble(token) * unaryMinus);
                 unaryMinus = 1;
@@ -75,7 +75,7 @@ public class Assignment10Part1 {
         return tokens.pop();
     }
 
-    private static void executeOperator(String token, Deque<Double> tokens) throws EmptyStackException,
+    private static void performTheOperation(String token, Deque<Double> tokens) throws EmptyStackException,
             ArithmeticException {
         if (tokens.size() < 2) throw new EmptyStackException();
         tokens.push(makeBaseOperation(token, tokens.pop(), tokens.pop()));
