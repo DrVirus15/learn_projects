@@ -45,8 +45,6 @@ public class Assignment10Part1 {
      *
      * @param args - command-line arguments
      * @return - a map of variable names to their double values
-     * @throws StringIndexOutOfBoundsException - if the variable format does not contain '='
-     * @throws IllegalArgumentException        - if the variable format is incorrect
      */
     private static Map<String, Double> parseVariables(String[] args) {
         Map<String, Double> variables = new HashMap<>();
@@ -61,7 +59,15 @@ public class Assignment10Part1 {
         return variables;
     }
 
-
+    /**
+     * Calculates the result of the expression with given variables.
+     * @param expression - the mathematical expression to evaluate
+     * @param variables - a map of variable names to their double values
+     * @return - the result of the evaluation
+     * @throws NumberFormatException - if a token cannot be parsed as a number
+     * @throws EmptyStackException - if there are not enough operands for an operation
+     * @throws ArithmeticException - if a mathematical error occurs (e.g., division by zero)
+     */
     private static double calculate(String expression, Map<String, Double> variables)
             throws NumberFormatException, EmptyStackException, ArithmeticException {
         Deque<String> rpn = parse(expression);
@@ -71,7 +77,13 @@ public class Assignment10Part1 {
         return calculateRPN(rpn);
     }
 
-
+    /**
+     * Calculates the result of the expression in Reverse Polish Notation (RPN).
+     * @param rpn - a deque representing the RPN of the expression
+     * @return - the result of the evaluation
+     * @throws EmptyStackException - if there are not enough operands for an operation
+     * @throws ArithmeticException - if a mathematical error occurs (e.g., division by zero)
+     */
     private static double calculateRPN(Deque<String> rpn) throws EmptyStackException, ArithmeticException {
         double unaryMinus = 1.0;
         Deque<Double> tokens = new ArrayDeque<>();
@@ -91,6 +103,12 @@ public class Assignment10Part1 {
         return tokens.pop();
     }
 
+    /**
+     * Performs the operation represented by the token on the top two elements of the tokens stack.
+     * @param token - the operator token
+     * @param tokens - the stack of operands
+     * @throws ArithmeticException - if a mathematical error occurs (e.g., division by zero)
+     */
     private static void performTheOperation(String token, Deque<Double> tokens) throws ArithmeticException {
         if (tokens.size() < 2) throw new EmptyStackException();
         tokens.push(makeBaseOperation(token, tokens.pop(), tokens.pop()));
@@ -99,6 +117,12 @@ public class Assignment10Part1 {
         }
     }
 
+    /**
+     * Replaces variables in the RPN with their corresponding values from the variables map.
+     * @param variables - a map of variable names to their double values
+     * @param RPN - a deque representing the RPN of the expression
+     * @return - a deque with variables replaced by their values
+     */
     private static Deque<String> checkAndPushVariable(Map<String, Double> variables, Deque<String> RPN) {
         Deque<String> stackWithoutVariables = new ArrayDeque<>();
         while (!RPN.isEmpty()) {
