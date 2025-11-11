@@ -210,7 +210,7 @@ public class Assignment11Part1 {
     private static void handleCloseBracket(Deque<String> opStack, Deque<String> rpn) {
         String lastToken = opStack.peek();
         while (!Objects.equals(lastToken, "(")) {
-            rpn.add(opStack.pop()); // Pop operators to RPN until an open bracket is found
+            rpn.add(opStack.pop());
             if (!opStack.isEmpty()) {
                 lastToken = opStack.peek();
             } else {
