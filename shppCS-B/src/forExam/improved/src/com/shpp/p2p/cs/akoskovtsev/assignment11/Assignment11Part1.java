@@ -42,8 +42,10 @@ public class Assignment11Part1 {
      * @param args Command-line arguments: the first argument is the formula, followed by variable assignments.
      */
     public static void main(String[] args) {
+        if (args == null || args.length == 0 || args[0] == null || args[0].isEmpty()) return;
+
 //        String formula = "15/(7-(1+1))*3-(2+(1+1))*15/(7-(200+1))*3-(2+(1+1))*(15/(7-(1+1))*3-(2+(1+1))+15/(7-(1+1))*3-(2+(1+1)))";
-        String formula = args[0].replace(" ", "").toLowerCase(); //TODO handle args... null 0 etc.
+        String formula = args[0].trim().replace(" ", "").toLowerCase(); //TODO handle args... null 0 etc.
         Map<String, Double> variables = parseVariables(args);
 //        System.out.println(formula + " " + variables);
         Deque<String> rpn = parse(formula); // Convert the formula to Reverse Polish Notation (RPN)
