@@ -50,16 +50,15 @@ public class Assignment11Part1 {
         if (args.length > 1) {
             try {
                 variables = parseVariables(args);
-            } catch (StringIndexOutOfBoundsException | IllegalArgumentException e) {
-                System.err.println("Exception while parse variables: " + e.getMessage());
+            } catch (StringIndexOutOfBoundsException | NullPointerException | IllegalArgumentException e) {
+                System.out.println("Exception while parse variables: " + e.getMessage());
             }
         }
-
         double result = 0;
         try {
             result = calculate(expression, variables);
         } catch (NumberFormatException | EmptyStackException | ArithmeticException e) {
-            System.err.println("Exception while evaluating expression: " + e.getMessage());
+            System.out.println("Exception while evaluating expression: " + e.getMessage());
         }
         System.out.print(result);
     }
@@ -70,8 +69,7 @@ public class Assignment11Part1 {
      * @param args - Command-line arguments
      * @return - Map of variable names to their values
      */
-    private static Map<String, Double> parseVariables(String[] args) throws StringIndexOutOfBoundsException,
-            IllegalArgumentException {
+    private static Map<String, Double> parseVariables(String[] args) {
         Map<String, Double> variables = new HashMap<>();
         for (int i = 1; i < args.length; i++) {
             String variable = args[i].replace(" ", "");
@@ -87,14 +85,16 @@ public class Assignment11Part1 {
     private static double calculate(String expression, Map<String, Double> variables)
             throws NumberFormatException, EmptyStackException, ArithmeticException {
         Deque<String> rpn = parse(expression);
-        rpn = checkAndPushVariable(variables, rpn);
+        if (!variables.isEmpty()) {
+            rpn = checkAndPushVariable(variables, rpn);
+        }
         return calculateRPN(rpn);
     }
 
     /**
      * Calculates the result of an expression in Reverse Polish Notation (RPN).
      *
-     * @param rpn       - the RPN expression as a stack of tokens
+     * @param rpn - the RPN expression as a stack of tokens
      * @return - the calculated result
      */
     private static double calculateRPN(Deque<String> rpn)
@@ -111,9 +111,9 @@ public class Assignment11Part1 {
         return tokens.pop();
     }
 
-    private static void performTheOperation(String token, Stack<Double> tokens) {
+    private static void performTheOperation(String token, Stack<Double> tokens) throws ArithmeticException {
         double[] operand = new double[OPERATOR_MAP.get(token).getOperandCount()];
-        if (tokens.size() < operand.length) throw new EmptyStackException(); // Not enough operands
+        if (tokens.size() < operand.length) throw new EmptyStackException();
         for (int i = 0; i < operand.length; i++) {
             operand[operand.length - 1 - i] = tokens.pop();
         }
@@ -190,7 +190,6 @@ public class Assignment11Part1 {
             opStack.push(token);
             return;
         }
-
         if (token.equals(")") && !opStack.isEmpty()) {
             handleCloseBracket(opStack, rpn);
             return;
@@ -240,11 +239,11 @@ public class Assignment11Part1 {
     private static void addToRPN(Deque<String> stack, StringBuilder operand, Deque<String> operatorStack) {
         if (!operand.isEmpty()) {
             if (OPERATOR_MAP.containsKey(operand.toString())) {
-                operatorStack.push(operand.toString());     // If the operand is actually an operator, push it to the operator stack
+                operatorStack.push(operand.toString());
             } else {
-                stack.add(operand.toString());              // Otherwise, add the operand to the RPN list
+                stack.add(operand.toString());
             }
         }
-        operand.setLength(0);                               // Clear the operand builder
+        operand.setLength(0);
     }
 }
