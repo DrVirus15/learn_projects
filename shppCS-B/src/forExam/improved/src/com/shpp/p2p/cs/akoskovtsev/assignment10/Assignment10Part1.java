@@ -216,9 +216,9 @@ public class Assignment10Part1 {
      */
     private static void handleStackPrecedence(Deque<String> operatorStack, Deque<String> rpn, String operator) {
         String lastOperatorInStack = operatorStack.peek();
-        addPowOperator(operatorStack, rpn, lastOperatorInStack);
-        addDivMultiOperators(operatorStack, rpn, lastOperatorInStack, operator);
-        addPlusMinusOperators(operatorStack, rpn, lastOperatorInStack, operator);
+        handlePowPrecedence(operatorStack, rpn, lastOperatorInStack);
+        handleDivMultiPrecedence(operatorStack, rpn, lastOperatorInStack, operator);
+        handlePlusMinusPrecedence(operatorStack, rpn, lastOperatorInStack, operator);
     }
 
     /**
@@ -228,9 +228,9 @@ public class Assignment10Part1 {
      * @param rpn                 - output stack for RPN
      * @param lastOperatorInStack - the last operator in the stack
      */
-    private static void addPowOperator(Deque<String> operatorStack, Deque<String> rpn, String lastOperatorInStack) {
+    private static void handlePowPrecedence(Deque<String> operatorStack, Deque<String> rpn, String lastOperatorInStack) {
         while (isPow(lastOperatorInStack)) {
-            lastOperatorInStack = addAllCurrentOperatorsToRPN(rpn, operatorStack);
+            lastOperatorInStack = addOperatorToRPN(rpn, operatorStack);
         }
     }
     /**
@@ -241,14 +241,14 @@ public class Assignment10Part1 {
      * @param lastOperatorInStack - the last operator in the stack
      * @param operator            - the current operator
      */
-    private static void addDivMultiOperators(Deque<String> operatorStack, Deque<String> rpn, String lastOperatorInStack,
-                                             String operator) {
+    private static void handleDivMultiPrecedence(Deque<String> operatorStack, Deque<String> rpn,
+                                                 String lastOperatorInStack, String operator) {
         if (isDivOrMulti(lastOperatorInStack) && isDivOrMulti(operator)) {
             rpn.add(operatorStack.pop());
         }
         if (isDivOrMulti(lastOperatorInStack) && isPlusOrMinus(operator)) {
             while (isDivOrMulti(lastOperatorInStack)) {
-                lastOperatorInStack = addAllCurrentOperatorsToRPN(rpn, operatorStack);
+                lastOperatorInStack = addOperatorToRPN(rpn, operatorStack);
             }
         }
     }
@@ -260,10 +260,10 @@ public class Assignment10Part1 {
      * @param lastOperatorInStack - the last operator in the stack
      * @param operator            - the current operator
      */
-    private static void addPlusMinusOperators(Deque<String> operatorStack, Deque<String> rpn,
-                                              String lastOperatorInStack, String operator) {
+    private static void handlePlusMinusPrecedence(Deque<String> operatorStack, Deque<String> rpn,
+                                                  String lastOperatorInStack, String operator) {
         while (isPlusOrMinus(lastOperatorInStack) && isPlusOrMinus(operator)) {
-            lastOperatorInStack = addAllCurrentOperatorsToRPN(rpn, operatorStack);
+            lastOperatorInStack = addOperatorToRPN(rpn, operatorStack);
         }
     }
     /**
@@ -273,11 +273,16 @@ public class Assignment10Part1 {
      * @param operatorStack - the stack of operators
      * @return - the new top operator of the operator stack, or an empty string if the stack is empty
      */
-    private static String addAllCurrentOperatorsToRPN(Deque<String> rpn, Deque<String> operatorStack) {
+    private static String addOperatorToRPN(Deque<String> rpn, Deque<String> operatorStack) {
         rpn.add(operatorStack.pop());
         return !operatorStack.isEmpty() ? operatorStack.peek() : "";
     }
 
+    /**
+     *
+     * @param symbol
+     * @return
+     */
     private static boolean isPlusOrMinus(String symbol) {
         return symbol != null && (symbol.equals("+") || symbol.equals("-"));
     }
