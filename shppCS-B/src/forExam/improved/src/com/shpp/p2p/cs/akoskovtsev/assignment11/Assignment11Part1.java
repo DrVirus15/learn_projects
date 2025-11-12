@@ -17,6 +17,9 @@ public class Assignment11Part1 {
      */
     private static final Map<String, Operator> OPERATOR_MAP = new HashMap<>();
 
+    /**
+     * Static block to initialize the operator map.
+     */
     static {
         OPERATOR_MAP.put("+", new Plus());
         OPERATOR_MAP.put("-", new Minus());
@@ -46,7 +49,6 @@ public class Assignment11Part1 {
      */
     public static void main(String[] args) {
         if (args == null || args.length == 0 || args[0] == null || args[0].isEmpty()) return;
-//        String expression = "15/(7-(1+1))*3-(2+(1+1))*15/(7-(200+1))*3-(2+(1+1))*(15/(7-(1+1))*3-(2+(1+1))+15/(7-(1+1))*3-(2+(1+1)))";
         String expression = args[0].replace(" ", "").toLowerCase();
         Map<String, Double> variables = new HashMap<>();
         if (args.length > 1) {
@@ -84,6 +86,16 @@ public class Assignment11Part1 {
         return variables;
     }
 
+    /**
+     * Calculates the result of the given expression with the provided variables.
+     *
+     * @param expression - the mathematical expression as a string
+     * @param variables  - a map of variable names to their values
+     * @return - the calculated result
+     * @throws NumberFormatException - if a token cannot be parsed as a number
+     * @throws EmptyStackException   - if there are not enough operands for an operation or mismatched brackets
+     * @throws ArithmeticException   - if an arithmetic error occurs (division by zero)
+     */
     private static double calculate(String expression, Map<String, Double> variables)
             throws NumberFormatException, EmptyStackException, ArithmeticException {
         Deque<String> rpn = parse(expression);
@@ -94,10 +106,13 @@ public class Assignment11Part1 {
     }
 
     /**
-     * Calculates the result of an expression in Reverse Polish Notation (RPN).
+     * Calculates the result of the expression in Reverse Polish Notation (RPN).
      *
-     * @param rpn - the RPN expression as a stack of tokens
+     * @param rpn - the expression in RPN as a stack of tokens
      * @return - the calculated result
+     * @throws NumberFormatException - if a token cannot be parsed as a number
+     * @throws EmptyStackException   - if there are not enough operands for an operation
+     * @throws ArithmeticException   - if an arithmetic error occurs (division by zero)
      */
     private static double calculateRPN(Deque<String> rpn)
             throws EmptyStackException, ArithmeticException, NumberFormatException {
@@ -113,6 +128,13 @@ public class Assignment11Part1 {
         return tokens.pop();
     }
 
+    /**
+     * Performs the operation represented by the token on the operands in the stack.
+     *
+     * @param token  - the operator token
+     * @param tokens - the stack of operands
+     * @throws ArithmeticException - if an arithmetic error occurs (division by zero)
+     */
     private static void performTheOperation(String token, Stack<Double> tokens) throws ArithmeticException {
         double[] operand = new double[OPERATOR_MAP.get(token).getOperandCount()];
         if (tokens.size() < operand.length) throw new EmptyStackException();
@@ -125,6 +147,13 @@ public class Assignment11Part1 {
         }
     }
 
+    /**
+     * Replaces variable tokens in the RPN stack with their corresponding values from the variables map.
+     *
+     * @param variables - a map of variable names to their values
+     * @param RPN       - the RPN expression as a stack of tokens
+     * @return - a new stack with variables replaced by their values
+     */
     private static Deque<String> checkAndPushVariable(Map<String, Double> variables, Deque<String> RPN) {
         Deque<String> stackWithoutVariables = new ArrayDeque<>();
         while (!RPN.isEmpty()) {
@@ -140,15 +169,16 @@ public class Assignment11Part1 {
      *
      * @param expression - the input expression as a string
      * @return - the RPN expression as a linked list of tokens
+     * @throws EmptyStackException - if there are mismatched brackets
      */
-    private static Deque<String> parse(String expression) {
+    private static Deque<String> parse(String expression) throws EmptyStackException {
         Deque<String> rpn = new ArrayDeque<>();
         Deque<String> opStack = new ArrayDeque<>();
         StringBuilder operand = new StringBuilder();
         for (int i = 0; i < expression.length(); i++) {
             char symbol = expression.charAt(i);
-            boolean isUnaryMinus = handleUnaryMinus(operand, symbol, opStack);
-            if (isUnaryMinus) {
+            if (operand.isEmpty() && symbol == '-') {
+                opStack.push("~");
                 continue;
             }
             String token = String.valueOf(symbol);
@@ -166,14 +196,12 @@ public class Assignment11Part1 {
         return rpn;
     }
 
-    private static boolean handleUnaryMinus(StringBuilder operand, char symbol, Deque<String> opStack) {
-        if (operand.isEmpty() && symbol == '-') {
-            opStack.push("~");
-            return true;
-        }
-        return false;
-    }
-
+    /**
+     * Pops any remaining operators from the operator stack to the RPN output list.
+     *
+     * @param rpn     - output list for RPN
+     * @param opStack - stack of operators
+     */
     private static void popRemainingOperators(Deque<String> rpn, Deque<String> opStack) {
         while (!opStack.isEmpty()) {
             rpn.add(opStack.pop());
@@ -186,8 +214,9 @@ public class Assignment11Part1 {
      * @param token   - the operator token
      * @param opStack - stack of operators
      * @param rpn     - output list for RPN
+     * @throws EmptyStackException - if there are mismatched brackets
      */
-    private static void handleOperator(String token, Deque<String> opStack, Deque<String> rpn) {
+    private static void handleOperator(String token, Deque<String> opStack, Deque<String> rpn) throws EmptyStackException {
         if (token.equals("(")) {
             opStack.push(token);
             return;
@@ -208,6 +237,13 @@ public class Assignment11Part1 {
         opStack.push(token);
     }
 
+    /**
+     * Handles the closing bracket by popping operators from the stack to the RPN output
+     * until the corresponding opening bracket is found.
+     *
+     * @param opStack - stack of operators
+     * @param rpn     - output list for RPN
+     */
     private static void handleCloseBracket(Deque<String> opStack, Deque<String> rpn) {
         String lastToken = opStack.peek();
         while (!Objects.equals(lastToken, "(")) {

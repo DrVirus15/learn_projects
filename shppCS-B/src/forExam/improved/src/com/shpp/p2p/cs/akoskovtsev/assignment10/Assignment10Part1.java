@@ -67,7 +67,7 @@ public class Assignment10Part1 {
      * @return - the result of the evaluation
      * @throws NumberFormatException - if a token cannot be parsed as a number
      * @throws EmptyStackException   - if there are not enough operands for an operation
-     * @throws ArithmeticException   - if a mathematical error occurs (e.g., division by zero)
+     * @throws ArithmeticException   - if a mathematical error occurs (division by zero)
      */
     private static double calculate(String expression, Map<String, Double> variables)
             throws NumberFormatException, EmptyStackException, ArithmeticException {
@@ -84,7 +84,7 @@ public class Assignment10Part1 {
      * @param rpn - a stack representing the RPN of the expression
      * @return - the result of the evaluation
      * @throws EmptyStackException - if there are not enough operands for an operation
-     * @throws ArithmeticException - if a mathematical error occurs (e.g., division by zero)
+     * @throws ArithmeticException - if a mathematical error occurs (division by zero)
      */
     private static double calculateRPN(Deque<String> rpn) throws EmptyStackException, ArithmeticException {
         double unaryMinus = 1.0;
@@ -110,7 +110,7 @@ public class Assignment10Part1 {
      *
      * @param token  - the operator token
      * @param tokens - the stack of operands
-     * @throws ArithmeticException - if a mathematical error occurs (e.g., division by zero)
+     * @throws ArithmeticException - if a mathematical error occurs (division by zero)
      */
     private static void performTheOperation(String token, Deque<Double> tokens) throws ArithmeticException {
         if (tokens.size() < 2) throw new EmptyStackException();

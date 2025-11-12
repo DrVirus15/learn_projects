@@ -75,7 +75,7 @@ public class testCalculator {
         System.out.println();
         System.out.println("==============================");
         System.out.print(" test5: ");
-        CalcArgs = null;
+        CalcArgs = new String[]{"15/(7-(1+1))*3-(2+(1+1))*15/(7-(200+1))*3-(2+(1+1))*(15/(7-(1+1))*3-(2+(1+1))+15/(7-(1+1))*3-(2+(1+1)))"};
         Assignment10Part1.main(CalcArgs);
         System.out.println();
         Assignment11Part1.main(CalcArgs);
