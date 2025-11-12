@@ -233,6 +233,7 @@ public class Assignment10Part1 {
             lastOperatorInStack = addOperatorToRPN(rpn, operatorStack);
         }
     }
+
     /**
      * Handles the addition of '*' and '/' operators to the RPN stack.
      *
@@ -252,6 +253,7 @@ public class Assignment10Part1 {
             }
         }
     }
+
     /**
      * Handles the addition of '+' and '-' operators to the RPN stack.
      *
@@ -266,6 +268,7 @@ public class Assignment10Part1 {
             lastOperatorInStack = addOperatorToRPN(rpn, operatorStack);
         }
     }
+
     /**
      * Pops the top operator from the operator stack and adds it to the RPN stack.
      *
@@ -279,22 +282,41 @@ public class Assignment10Part1 {
     }
 
     /**
+     * Checks if the symbol is a power operator.
      *
-     * @param symbol
-     * @return
+     * @param symbol - the operator symbol
+     * @return - true if the symbol is '^', false otherwise
+     */
+    private static boolean isPow(String symbol) {
+        return symbol != null && symbol.equals("^");
+    }
+
+    /**
+     * Checks if the symbol is a division or multiplication operator.
+     *
+     * @param symbol - the operator symbol
+     * @return - true if the symbol is '*' or '/', false otherwise
+     */
+    private static boolean isDivOrMulti(String symbol) {
+        return symbol != null && (symbol.equals("*") || symbol.equals("/"));
+    }
+
+    /**
+     * Checks if the symbol is a plus or minus operator.
+     *
+     * @param symbol - the operator symbol
+     * @return - true if the symbol is '+' or '-', false otherwise
      */
     private static boolean isPlusOrMinus(String symbol) {
         return symbol != null && (symbol.equals("+") || symbol.equals("-"));
     }
 
-    private static boolean isDivOrMulti(String symbol) {
-        return symbol != null && (symbol.equals("*") || symbol.equals("/"));
-    }
-
-    private static boolean isPow(String symbol) {
-        return symbol != null && symbol.equals("^");
-    }
-
+    /**
+     * Checks if the given string is a recognized operator.
+     *
+     * @param strSymbol - the string to check
+     * @return - true if the OPERATORS contains the string as an operator, false otherwise
+     */
     private static boolean isOperator(String strSymbol) {
         return OPERATORS.contains(strSymbol);
     }
@@ -312,6 +334,15 @@ public class Assignment10Part1 {
         operand.setLength(0);
     }
 
+    /**
+     * Performs a basic mathematical operation between two operands.
+     *
+     * @param operator     - the operator symbol
+     * @param rightOperand - the right operand
+     * @param leftOperand  - the left operand
+     * @return - the result of the operation
+     * @throws ArithmeticException - if a mathematical error occurs (division by zero)
+     */
     private static double makeBaseOperation(String operator, double rightOperand, double leftOperand) {
         if (operator.equals("/") && rightOperand == 0) {
             throw new ArithmeticException("Mathematical error: Division by zero.");
