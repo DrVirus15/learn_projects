@@ -75,7 +75,7 @@ public class testCalculator {
         System.out.println();
         System.out.println("==============================");
         System.out.print(" test5: ");
-        CalcArgs = null;
+        CalcArgs = new String[]{"c^a*c+b^c^-c+c^a^c", "a=3", "b=5", "c=2"};
         Assignment10Part1.main(CalcArgs);
         System.out.println();
         Assignment11Part1.main(CalcArgs);

@@ -61,12 +61,13 @@ public class Assignment10Part1 {
 
     /**
      * Calculates the result of the expression with given variables.
+     *
      * @param expression - the mathematical expression to evaluate
-     * @param variables - a map of variable names to their double values
+     * @param variables  - a map of variable names to their double values
      * @return - the result of the evaluation
      * @throws NumberFormatException - if a token cannot be parsed as a number
-     * @throws EmptyStackException - if there are not enough operands for an operation
-     * @throws ArithmeticException - if a mathematical error occurs (e.g., division by zero)
+     * @throws EmptyStackException   - if there are not enough operands for an operation
+     * @throws ArithmeticException   - if a mathematical error occurs (e.g., division by zero)
      */
     private static double calculate(String expression, Map<String, Double> variables)
             throws NumberFormatException, EmptyStackException, ArithmeticException {
@@ -79,7 +80,8 @@ public class Assignment10Part1 {
 
     /**
      * Calculates the result of the expression in Reverse Polish Notation (RPN).
-     * @param rpn - a deque representing the RPN of the expression
+     *
+     * @param rpn - a stack representing the RPN of the expression
      * @return - the result of the evaluation
      * @throws EmptyStackException - if there are not enough operands for an operation
      * @throws ArithmeticException - if a mathematical error occurs (e.g., division by zero)
@@ -105,7 +107,8 @@ public class Assignment10Part1 {
 
     /**
      * Performs the operation represented by the token on the top two elements of the tokens stack.
-     * @param token - the operator token
+     *
+     * @param token  - the operator token
      * @param tokens - the stack of operands
      * @throws ArithmeticException - if a mathematical error occurs (e.g., division by zero)
      */
@@ -119,8 +122,9 @@ public class Assignment10Part1 {
 
     /**
      * Replaces variables in the RPN with their corresponding values from the variables map.
+     *
      * @param variables - a map of variable names to their double values
-     * @param RPN - a deque representing the RPN of the expression
+     * @param RPN       - a deque representing the RPN of the expression
      * @return - a deque with variables replaced by their values
      */
     private static Deque<String> checkAndPushVariable(Map<String, Double> variables, Deque<String> RPN) {
@@ -134,10 +138,10 @@ public class Assignment10Part1 {
     }
 
     /**
-     * Parses the input expression into Reverse Polish Notation (RPN) using the Shunting Yard algorithm.
+     * Parses the expression string into Reverse Polish Notation (RPN) using the Shunting Yard algorithm.
      *
      * @param expression - the mathematical expression to parse
-     * @return - a LinkedList representing the RPN of the expression
+     * @return - a stack representing the RPN of the expression
      */
     private static Deque<String> parse(String expression) {
         Deque<String> rpn = new ArrayDeque<>();
@@ -145,8 +149,9 @@ public class Assignment10Part1 {
         StringBuilder operand = new StringBuilder();
         for (int i = 0; i < expression.length(); i++) {
             char symbol = expression.charAt(i);
-            boolean isUnaryMinus = handleUnaryMinus(operand, symbol, rpn);
-            if (isUnaryMinus) {
+            if (operand.isEmpty() && symbol == '-') {
+                symbol = '~';
+                rpn.add(String.valueOf(symbol));
                 continue;
             }
             if (isOperator(String.valueOf(symbol))) {
@@ -155,61 +160,120 @@ public class Assignment10Part1 {
             } else {
                 operand.append(symbol);
             }
-            handleEndOfExpression(expression, operand, rpn, i);
+            if (i == expression.length() - 1) {
+                handleEndOfExpression(operand, rpn);
+            }
         }
         popRemainingOperators(operatorStack, rpn);
         return rpn;
     }
 
-    private static void handleEndOfExpression(String formula, StringBuilder operand, Deque<String> rpn, int index) {
-        if (index == formula.length() - 1 && !operand.isEmpty()) {
+    /**
+     * Handles the end of the expression by adding any remaining operand to the RPN stack.
+     *
+     * @param operand - the built operand
+     * @param rpn     - the RPN stack
+     */
+    private static void handleEndOfExpression(StringBuilder operand, Deque<String> rpn) {
+        if (!operand.isEmpty()) {
             addToRPN(rpn, operand);
         }
     }
 
-    private static boolean handleUnaryMinus(StringBuilder operand, char symbol, Deque<String> rpn) {
-        if (operand.isEmpty() && symbol == '-') {
-            symbol = '~';
-            rpn.add(String.valueOf(symbol));
-            return true;
-        }
-        return false;
-    }
-
+    /**
+     * Pops all remaining operators from the operator stack to the RPN stack.
+     *
+     * @param operatorStack - the stack of operators
+     * @param rpn           - the RPN stack
+     */
     private static void popRemainingOperators(Deque<String> operatorStack, Deque<String> rpn) {
         while (!operatorStack.isEmpty()) {
             rpn.add(operatorStack.pop());
         }
     }
 
+    /**
+     * Handles the operator according to the Shunting Yard algorithm.
+     *
+     * @param operatorStack - stack of operators
+     * @param rpn           - output stack for RPN
+     * @param symbol        - the operator symbol
+     */
     private static void handleOperator(Deque<String> operatorStack, Deque<String> rpn, char symbol) {
         String operator = String.valueOf(symbol);
         if (!operatorStack.isEmpty() && symbol != '^') {
             handleStackPrecedence(operatorStack, rpn, operator);
         }
-        operatorStack.push(String.valueOf(symbol));
+        operatorStack.push(operator);
     }
 
+    /**
+     * Handles operator precedence when adding operators to the RPN stack.
+     *
+     * @param operatorStack - stack of operators
+     * @param rpn           - output stack for RPN
+     * @param operator      - the current operator
+     */
     private static void handleStackPrecedence(Deque<String> operatorStack, Deque<String> rpn, String operator) {
         String lastOperatorInStack = operatorStack.peek();
+        addPowOperator(operatorStack, rpn, lastOperatorInStack);
+        addDivMultiOperators(operatorStack, rpn, lastOperatorInStack, operator);
+        addPlusMinusOperators(operatorStack, rpn, lastOperatorInStack, operator);
+    }
 
+    /**
+     * Handles the addition of '^' operators to the RPN stack.
+     *
+     * @param operatorStack       - stack of operators
+     * @param rpn                 - output stack for RPN
+     * @param lastOperatorInStack - the last operator in the stack
+     */
+    private static void addPowOperator(Deque<String> operatorStack, Deque<String> rpn, String lastOperatorInStack) {
         while (isPow(lastOperatorInStack)) {
-            lastOperatorInStack = addAllOperatorsToRPN(rpn, operatorStack);
+            lastOperatorInStack = addAllCurrentOperatorsToRPN(rpn, operatorStack);
         }
+    }
+    /**
+     * Handles the addition of '*' and '/' operators to the RPN stack.
+     *
+     * @param operatorStack       - stack of operators
+     * @param rpn                 - output stack for RPN
+     * @param lastOperatorInStack - the last operator in the stack
+     * @param operator            - the current operator
+     */
+    private static void addDivMultiOperators(Deque<String> operatorStack, Deque<String> rpn, String lastOperatorInStack,
+                                             String operator) {
         if (isDivOrMulti(lastOperatorInStack) && isDivOrMulti(operator)) {
             rpn.add(operatorStack.pop());
         }
         if (isDivOrMulti(lastOperatorInStack) && isPlusOrMinus(operator)) {
             while (isDivOrMulti(lastOperatorInStack)) {
-                lastOperatorInStack = addAllOperatorsToRPN(rpn, operatorStack);
+                lastOperatorInStack = addAllCurrentOperatorsToRPN(rpn, operatorStack);
             }
         }
+    }
+    /**
+     * Handles the addition of '+' and '-' operators to the RPN stack.
+     *
+     * @param operatorStack       - stack of operators
+     * @param rpn                 - output stack for RPN
+     * @param lastOperatorInStack - the last operator in the stack
+     * @param operator            - the current operator
+     */
+    private static void addPlusMinusOperators(Deque<String> operatorStack, Deque<String> rpn,
+                                              String lastOperatorInStack, String operator) {
         while (isPlusOrMinus(lastOperatorInStack) && isPlusOrMinus(operator)) {
-            lastOperatorInStack = addAllOperatorsToRPN(rpn, operatorStack);
+            lastOperatorInStack = addAllCurrentOperatorsToRPN(rpn, operatorStack);
         }
     }
-
-    private static String addAllOperatorsToRPN(Deque<String> rpn, Deque<String> operatorStack) {
+    /**
+     * Pops the top operator from the operator stack and adds it to the RPN stack.
+     *
+     * @param rpn           - the RPN stack
+     * @param operatorStack - the stack of operators
+     * @return - the new top operator of the operator stack, or an empty string if the stack is empty
+     */
+    private static String addAllCurrentOperatorsToRPN(Deque<String> rpn, Deque<String> operatorStack) {
         rpn.add(operatorStack.pop());
         return !operatorStack.isEmpty() ? operatorStack.peek() : "";
     }

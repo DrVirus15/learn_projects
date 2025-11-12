@@ -12,7 +12,9 @@ import java.util.*;
  * Coma (,) is not supported in double numbers.
  */
 public class Assignment11Part1 {
-    // Map of operators and their corresponding implementations
+    /**
+     * A map of operator symbols to their corresponding Operator implementations.
+     */
     private static final Map<String, Operator> OPERATOR_MAP = new HashMap<>();
 
     static {
