@@ -43,7 +43,7 @@ public class Div implements Operator {
     @Override
     public double calculate(double... operands) {
         if (operands[1] == 0) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("Mathematical error: Division by zero.");
         }
         return operands[0] / operands[1];
     }
