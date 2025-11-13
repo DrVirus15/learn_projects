@@ -106,6 +106,23 @@ public class Assignment11Part1 {
     }
 
     /**
+     * Replaces variable tokens in the RPN stack with their corresponding values from the variables map.
+     *
+     * @param variables - a map of variable names to their values
+     * @param RPN       - the RPN expression as a stack of tokens
+     * @return - a new stack with variables replaced by their values
+     */
+    private static Deque<String> checkAndPushVariable(Map<String, Double> variables, Deque<String> RPN) {
+        Deque<String> stackWithoutVariables = new ArrayDeque<>();
+        while (!RPN.isEmpty()) {
+            String token = RPN.pop();
+            boolean tokenIsVariable = variables.get(token) != null;
+            stackWithoutVariables.offer(tokenIsVariable ? String.valueOf(variables.get(token)) : token);
+        }
+        return stackWithoutVariables;
+    }
+
+    /**
      * Calculates the result of the expression in Reverse Polish Notation (RPN).
      *
      * @param rpn - the expression in RPN as a stack of tokens
@@ -148,23 +165,6 @@ public class Assignment11Part1 {
     }
 
     /**
-     * Replaces variable tokens in the RPN stack with their corresponding values from the variables map.
-     *
-     * @param variables - a map of variable names to their values
-     * @param RPN       - the RPN expression as a stack of tokens
-     * @return - a new stack with variables replaced by their values
-     */
-    private static Deque<String> checkAndPushVariable(Map<String, Double> variables, Deque<String> RPN) {
-        Deque<String> stackWithoutVariables = new ArrayDeque<>();
-        while (!RPN.isEmpty()) {
-            String token = RPN.pop();
-            boolean tokenIsVariable = variables.get(token) != null;
-            stackWithoutVariables.offer(tokenIsVariable ? String.valueOf(variables.get(token)) : token);
-        }
-        return stackWithoutVariables;
-    }
-
-    /**
      * Parses the expression string into Reverse Polish Notation (RPN) using the Shunting Yard algorithm.
      *
      * @param expression - the input expression as a string
@@ -188,12 +188,25 @@ public class Assignment11Part1 {
             } else {
                 operand.append(token);
             }
-            if (i == expression.length() - 1 && !operand.isEmpty()) {
-                addToRPN(rpn, operand, opStack);
+            if (i == expression.length() - 1) {
+                handleEndOfExpression(rpn, operand, opStack);
             }
         }
         popRemainingOperators(rpn, opStack);
         return rpn;
+    }
+
+    /**
+     * Handles the end of the expression by adding any remaining operand to the RPN list.
+     *
+     * @param rpn     - the RPN stack
+     * @param operand - the current operand being built
+     * @param opStack - stack of operators
+     */
+    private static void handleEndOfExpression(Deque<String> rpn, StringBuilder operand, Deque<String> opStack) {
+        if (!operand.isEmpty()) {
+            addToRPN(rpn, operand, opStack);
+        }
     }
 
     /**
@@ -225,6 +238,19 @@ public class Assignment11Part1 {
             handleCloseBracket(opStack, rpn);
             return;
         }
+        popOperatorsByPrecedence(token, opStack, rpn);
+        opStack.push(token);
+    }
+
+    /**
+     * Pops operators from the operator stack to the RPN output based on precedence and associativity.
+     *
+     * @param token   - the current operator token
+     * @param opStack - stack of operators
+     * @param rpn     - output list for RPN
+     */
+
+    private static void popOperatorsByPrecedence(String token, Deque<String> opStack, Deque<String> rpn) {
         int tokenPrecedence = OPERATOR_MAP.get(token).getPrecedence();
         boolean isLeftAssoc = OPERATOR_MAP.get(token).isLeftAssociativity();
         while (!opStack.isEmpty()) {
@@ -234,7 +260,6 @@ public class Assignment11Part1 {
             if (!(tokenPrecedence < topPrecedence || (tokenPrecedence == topPrecedence && isLeftAssoc))) break;
             rpn.add(opStack.pop());
         }
-        opStack.push(token);
     }
 
     /**
