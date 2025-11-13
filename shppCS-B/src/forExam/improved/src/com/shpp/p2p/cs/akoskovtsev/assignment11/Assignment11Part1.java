@@ -17,7 +17,7 @@ public class Assignment11Part1 {
      */
     private static final Map<String, Operator> OPERATOR_MAP = new HashMap<>();
 
-    /**
+    /*
      * Static block to initialize the operator map.
      */
     static {
@@ -249,7 +249,6 @@ public class Assignment11Part1 {
      * @param opStack - stack of operators
      * @param rpn     - output list for RPN
      */
-
     private static void popOperatorsByPrecedence(String token, Deque<String> opStack, Deque<String> rpn) {
         int tokenPrecedence = OPERATOR_MAP.get(token).getPrecedence();
         boolean isLeftAssoc = OPERATOR_MAP.get(token).isLeftAssociativity();

@@ -202,50 +202,50 @@ public class Assignment10Part1 {
     private static void handleOperator(Deque<String> operatorStack, Deque<String> rpn, char symbol) {
         String operator = String.valueOf(symbol);
         if (!operatorStack.isEmpty() && symbol != '^') {
-            handleStackPrecedence(operatorStack, rpn, operator);
+            popOperatorsByPrecedence(operatorStack, rpn, operator);
         }
         operatorStack.push(operator);
     }
 
     /**
-     * Handles operator precedence when adding operators to the RPN stack.
+     * Pops operators from the operator stack to the RPN stack based on precedence rules.
      *
-     * @param operatorStack - stack of operators
-     * @param rpn           - output stack for RPN
-     * @param operator      - the current operator
+     * @param operatorStack - the stack of operators
+     * @param rpn           - the RPN stack
+     * @param operator      - the current operator being processed
      */
-    private static void handleStackPrecedence(Deque<String> operatorStack, Deque<String> rpn, String operator) {
-        handlePowPrecedence(operatorStack, rpn);
-        handleDivMultiPrecedence(operatorStack, rpn, operator);
-        handlePlusMinusPrecedence(operatorStack, rpn, operator);
+    private static void popOperatorsByPrecedence(Deque<String> operatorStack, Deque<String> rpn, String operator) {
+        popPowerOperators(operatorStack, rpn);
+        popDivMultiOperators(operatorStack, rpn, operator);
+        popPlusMinusOperators(operatorStack, rpn, operator);
     }
 
     /**
-     * Handles the addition of '^' operators to the RPN stack.
+     * Pops power operators from the operator stack to the RPN stack.
      *
-     * @param operatorStack       - stack of operators
-     * @param rpn                 - output stack for RPN
+     * @param operatorStack - the stack of operators
+     * @param rpn           - the RPN stack
      */
-    private static void handlePowPrecedence(Deque<String> operatorStack, Deque<String> rpn) {
-        String lastOperatorInStack = operatorStack.peek();
+    private static void popPowerOperators(Deque<String> operatorStack, Deque<String> rpn) {
+        String lastOperatorInStack = safePeek(operatorStack);
         while (isPow(lastOperatorInStack)) {
             lastOperatorInStack = addOperatorToRPN(rpn, operatorStack);
         }
     }
 
     /**
-     * Handles the addition of '*' and '/' operators to the RPN stack.
+     * Pops division and multiplication operators from the operator stack to the RPN stack based on precedence rules.
      *
-     * @param operatorStack       - stack of operators
-     * @param rpn                 - output stack for RPN
-     * @param operator            - the current operator
+     * @param operatorStack - the stack of operators
+     * @param rpn           - the RPN stack
+     * @param operator      - the current operator being processed
      */
-    private static void handleDivMultiPrecedence(Deque<String> operatorStack, Deque<String> rpn, String operator) {
-        String lastOperatorInStack = operatorStack.peek();
+    private static void popDivMultiOperators(Deque<String> operatorStack, Deque<String> rpn, String operator) {
+        String lastOperatorInStack = safePeek(operatorStack);
         if (isDivOrMulti(lastOperatorInStack) && isDivOrMulti(operator)) {
             rpn.add(operatorStack.pop());
         }
-        lastOperatorInStack = operatorStack.peek();
+        lastOperatorInStack = safePeek(operatorStack);
         if (isDivOrMulti(lastOperatorInStack) && isPlusOrMinus(operator)) {
             while (isDivOrMulti(lastOperatorInStack)) {
                 lastOperatorInStack = addOperatorToRPN(rpn, operatorStack);
@@ -254,17 +254,27 @@ public class Assignment10Part1 {
     }
 
     /**
-     * Handles the addition of '+' and '-' operators to the RPN stack.
+     * Pops plus and minus operators from the operator stack to the RPN stack based on precedence rules.
      *
-     * @param operatorStack       - stack of operators
-     * @param rpn                 - output stack for RPN
-     * @param operator            - the current operator
+     * @param operatorStack - the stack of operators
+     * @param rpn           - the RPN stack
+     * @param operator      - the current operator being processed
      */
-    private static void handlePlusMinusPrecedence(Deque<String> operatorStack, Deque<String> rpn, String operator) {
-        String lastOperatorInStack = operatorStack.peek();
+    private static void popPlusMinusOperators(Deque<String> operatorStack, Deque<String> rpn, String operator) {
+        String lastOperatorInStack = safePeek(operatorStack);
         while (isPlusOrMinus(lastOperatorInStack) && isPlusOrMinus(operator)) {
             lastOperatorInStack = addOperatorToRPN(rpn, operatorStack);
         }
+    }
+
+    /**
+     * Safely peeks the top operator from the operator stack.
+     *
+     * @param operatorStack - the stack of operators
+     * @return - the top operator of the operator stack, or an empty string if the stack is empty
+     */
+    private static String safePeek(Deque<String> operatorStack) {
+        return operatorStack.isEmpty() ? "" : operatorStack.peek();
     }
 
     /**

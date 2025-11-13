@@ -12,9 +12,10 @@
      - змінено метод parse:
             - додано isOperator(..) для перевірки символу на оператор
             - додано handleOperator(..) для обробки оператору
-            - додано handleStackPrecedence(..) для обробки стека операторів згідно з асоціативністю
-                   - додано методи handlePowPrecedence(..) handleDivOrMultiPrecedence(..) handlePlusOrMinusPrecedence(..)
-                     для обробки операторів по пріоритету.
+            - додано popOperatorsByPrecedence(..) для обробки стека операторів згідно з асоціативністю
+                   - додано методи popPowerOperators(..) popDivMultiOperators(..) popPlusMinusOperators(..) для обробки
+                     операторів по пріоритету.
+                   - додано метод safePeek(..) для безпечного перегляду вершини стека операторів
                    - змінено перевірку асоціативності за допомогою методів: isPow isDivOrMulti isPlusOrMinus
                    - додано метод addOperatorToRPN(..) - виштовхує оператор зі стека в RPN і повертає наступний елемент
             - винесена обробка кінця виразу в метод handleEndOfExpression(..)
