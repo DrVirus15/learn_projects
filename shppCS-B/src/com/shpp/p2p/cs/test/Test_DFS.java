@@ -1,9 +1,7 @@
 package com.shpp.p2p.cs.test;
 
-
-
-
-import com.shpp.p2p.cs.akoskovtsev.assignment13.Assignment13Part1;
+import forExam.improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.Assignment13Part1;
+//import com.shpp.p2p.cs.akoskovtsev.assignment13.Assignment13Part1;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
