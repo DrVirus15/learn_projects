@@ -18,18 +18,11 @@ public class SimilarPixelFinder {
     /**
      * The squared delta value used for comparison, calculated based on the accuracy percentage.
      */
-    private static final double SQUARED_DELTA;
+    private static final int SQUARED_DELTA;
 
     static {
-
-        double delta = (double) ACCURACY_PERCENTAGE * MAX_BRIGHTNESS / 100.0;
+        int delta = (int) (ACCURACY_PERCENTAGE * MAX_BRIGHTNESS / 100.0);
         SQUARED_DELTA = delta * delta;
-    }
-
-    /**
-     * Constructor for SimilarPixelFinder.
-     */
-    private SimilarPixelFinder() {
     }
 
     /**
