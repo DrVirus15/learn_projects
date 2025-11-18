@@ -10,14 +10,14 @@ import java.io.IOException;
  */
 public class Assignment13Part1 {
     /**
-     * Default image path if none is provided via command line arguments
+     * Default image path if none is provided via command line arguments.
      */
     private static final String DEFAULT_IMAGE_PATH = "test.jpg";
 
     /**
      * The main method to run the silhouette counting program.
      *
-     * @param args - command line arguments, where the first argument can be the image file path
+     * @param args - command line arguments, where the first argument can be the image file path.
      */
     public static void main(String[] args) {
         String filePath = getFilePathFromArgs(args);
