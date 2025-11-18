@@ -35,8 +35,8 @@ public class Assignment13Part1 {
     /**
      * Retrieves the file path from command line arguments or returns the default path.
      *
-     * @param args - command line arguments
-     * @return - the image file path
+     * @param args - command line arguments.
+     * @return - the image file path.
      */
     private static String getFilePathFromArgs(String[] args) {
         boolean isValidArg = args != null &&
