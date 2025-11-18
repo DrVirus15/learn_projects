@@ -286,7 +286,7 @@ public class Assignment10Part1 {
      */
     private static String addOperatorToRPN(Deque<String> rpn, Deque<String> operatorStack) {
         rpn.add(operatorStack.pop());
-        return !operatorStack.isEmpty() ? operatorStack.peek() : "";
+        return safePeek(operatorStack);
     }
 
     /**

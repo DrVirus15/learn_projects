@@ -160,7 +160,7 @@ public class Assignment11Part1 {
         }
         tokens.push(OPERATOR_MAP.get(token).calculate(operand));
         if (tokens.peek().isInfinite() || tokens.peek().isNaN()) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("The result of the operation is undefined (infinity or NaN).");
         }
     }
 

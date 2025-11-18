@@ -10,9 +10,9 @@ import java.io.IOException;
  */
 public class Assignment13Part1 {
     /**
-     * Default image path if none is provided via command line arguments
+     * Default image name if none is provided via command line arguments
      */
-    private static final String DEFAULT_IMAGE_PATH = "test.jpg";
+    private static final String DEFAULT_IMAGE_NAME = "test.jpg";
 
     /**
      * The main method to run the silhouette counting program.
@@ -23,7 +23,7 @@ public class Assignment13Part1 {
         String filePath = getFilePathFromArgs(args);
         BufferedImage image = null;
         try {
-            image = new ImageLoader(filePath).load();
+            image = new ImageLoader().load(filePath);
         } catch (IOException e) {
             System.err.println("ERROR: " + e.getMessage());
         }
@@ -43,7 +43,7 @@ public class Assignment13Part1 {
                 args.length > 0 &&
                 args[0] != null &&
                 !args[0].isEmpty();
-        return isValidArg ? args[0] : DEFAULT_IMAGE_PATH;
+        return isValidArg ? args[0] : DEFAULT_IMAGE_NAME;
     }
 
 }
