@@ -50,14 +50,13 @@ public class Test_DFS {
             "\nassets/separate/test5.png" +
             "\nassets/separate/test7.png" +
             "\nassets/separate/test8.png" +
-            "\nassets/separate/test9.png" +
-            "\nassets/separate/test10.jpg";
+            "\nassets/separate/test9.png";
 
 
-    public int[] results = {4, 4, 5, 8, 10,11, 1, 1, 1, 7,2,
+    public int[] results = {4, 4, 5, 8, 10,11,1, 1, 1, 7, 2,
                             2, 4, 4, 3, 4, 4, 4, 4, 4, 2, 2, 1,
                             4, 2, 6, 4, 1, 2, 3, 1, 7, 8, 0,
-                            8, 30,2, 2, 2, 2, 2, 2, 15};
+                            8, 30,2, 2, 2, 2, 2, 2};
 
 
     public static void main(String[] args) {

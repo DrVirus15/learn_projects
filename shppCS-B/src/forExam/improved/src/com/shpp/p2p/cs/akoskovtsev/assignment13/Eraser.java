@@ -1,6 +1,5 @@
 package forExam.improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 /**
@@ -19,37 +18,18 @@ public class Eraser {
      * Minimum erase radius to ensure some level of erasing even for small silhouettes.
      */
     private static final int MIN_ERASE_RADIUS = 3;
-    /**
-     * The image to be processed for silhouette separation.
-     */
-    private final BufferedImage image;
-    /**
-     * The ARGB value of the background pixel used for comparison.
-     */
-    private final int backgroundPix;
 
     /**
-     * Constructor to initialize the Eraser with the image and background pixel color.
+     * Separates silhouettes from the background in the given ARGB array of the image.
      *
-     * @param image          - the image to be processed
-     * @param backgroundARGB - the ARGB value of the background pixel
+     * @param argbArray     - the array of ARGB pixel values
+     * @param width         - the width of the image
+     * @param height        - the height of the image
+     * @param backgroundARGB - the ARGB value of the background color
+     * @return - a 2D boolean array where true indicates a background pixel after erasing near silhouettes
      */
-    public Eraser(BufferedImage image, int backgroundARGB) {
-        this.image = image;
-        this.backgroundPix = backgroundARGB;
-    }
-
-    /**
-     * Separates silhouettes from the background by creating a mask.
-     * It first identifies background pixels, estimates an erase radius,
-     * and then erases pixels that are close to the background.
-     *
-     * @return - a 2D boolean array where true indicates a background pixel and false indicates silhouette pixel
-     */
-    public boolean[][] separateSilhouettesMask() {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        boolean[][] backgroundMask = findBackgroundMask();
+    public boolean[][] separateSilhouettesMask(int[] argbArray, int width, int height, int backgroundARGB) {
+        boolean[][] backgroundMask = findBackgroundMask(argbArray, backgroundARGB, width, height);
         int radius = estimateEraseRadius(backgroundMask);
         boolean[][] erasedImageBgMask = new boolean[height][width];
         for (int row = 0; row < height; row++) {
@@ -65,18 +45,18 @@ public class Eraser {
     }
 
     /**
-     * Finds the background mask by comparing each pixel in the image to the known background pixel color.
+     * Creates a background mask from the ARGB array of the image.
      *
+     * @param argbArray     - the array of ARGB pixel values
+     * @param backgroundARGB - the ARGB value of the background color
+     * @param width         - the width of the image
+     * @param height        - the height of the image
      * @return - a 2D boolean array where true indicates a background pixel
      */
-    private boolean[][] findBackgroundMask() {
-        int width = image.getWidth();
-        int height = image.getHeight();
+    private boolean[][] findBackgroundMask(int[] argbArray, int backgroundARGB, int width, int height) {
         boolean[][] backgroundMask = new boolean[height][width];
-        int[] rgbArray = new int[width * height];
-        image.getRGB(0, 0, width, height, rgbArray, 0, width);
-        for (int i = 0; i < rgbArray.length; i++) {
-            backgroundMask[i / width][i % width] = SimilarPixelFinder.isPixelSimilar(rgbArray[i], backgroundPix);
+        for (int i = 0; i < argbArray.length; i++) {
+            backgroundMask[i / width][i % width] = SimilarPixelFinder.isPixelSimilar(argbArray[i], backgroundARGB);
         }
         return backgroundMask;
     }
@@ -107,10 +87,12 @@ public class Eraser {
      * @return - true if the pixel needs to be erased, false otherwise
      */
     private boolean isNeedsErasing(int col, int row, int radius, boolean[][] isBackground) {
+        int width = isBackground[0].length;
+        int height = isBackground.length;
         int yMin = Math.max(0, row - radius);
-        int yMax = Math.min(image.getHeight() - 1, row + radius);
+        int yMax = Math.min(height - 1, row + radius);
         int xMin = Math.max(0, col - radius);
-        int xMax = Math.min(image.getWidth() - 1, col + radius);
+        int xMax = Math.min(width - 1, col + radius);
         for (int y = yMin; y <= yMax; y++) {
             if (isBackground[y][xMin] || isBackground[y][xMax]) return true;
         }

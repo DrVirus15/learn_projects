@@ -10,30 +10,17 @@ public class BackgroundFinder {
      */
     private static final int SAMPLE_STEP = 2;
     /**
-     * The image to be analyzed for background color.
-     */
-    private final BufferedImage image;
-    /**
      * A map to store the frequency of each color in the image.
      */
     private final Map<Integer, Integer> colorFrequencyMap = new HashMap<>();
-
-    /**
-     * Constructor to initialize the BackgroundFinder with the image.
-     *
-     * @param image - the image to be analyzed
-     */
-    public BackgroundFinder(BufferedImage image) {
-        this.image = image;
-    }
 
     /**
      * Finds the most frequent color in the image, which is assumed to be the background color.
      *
      * @return - the ARGB value of the most frequent color (background color)
      */
-    public int findBackground() {
-        calculateColorFrequencies();
+    public int findBackground(int[] argbArray) {
+        calculateColorFrequencies(argbArray);
         int numberOfPixels = 0;
         int backgroundPixel = 0;
         for (Map.Entry<Integer, Integer> entry : colorFrequencyMap.entrySet()) {
@@ -48,13 +35,9 @@ public class BackgroundFinder {
     /**
      * Calculates the frequency of each color in the image by sampling pixels at defined intervals.
      */
-    private void calculateColorFrequencies() {
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int[] rgbArray = new int[width * height];
-        image.getRGB(0, 0, width, height, rgbArray, 0, width);
-        for (int i = 0; i < rgbArray.length; i += SAMPLE_STEP) {
-            processPixel(rgbArray[i]);
+    private void calculateColorFrequencies(int[] argbArray) {
+        for (int i = 0; i < argbArray.length; i += SAMPLE_STEP) {
+            processPixel(argbArray[i]);
         }
     }
 

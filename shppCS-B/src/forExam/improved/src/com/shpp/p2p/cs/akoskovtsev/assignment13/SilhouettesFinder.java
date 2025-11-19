@@ -33,10 +33,12 @@ public class SilhouettesFinder {
      * @return - a 2D boolean array where true indicates a background pixel and false indicates silhouette pixel
      */
     private boolean[][] createSilhouetteMask(BufferedImage image) {
-        int[] argbArray = image.getRGB(0, 0, image.getWidth(), image.getHeight(),
-                null, 0, image.getWidth());
-        Eraser erase = new Eraser(image, new BackgroundFinder(image).findBackground());
-        return erase.separateSilhouettesMask();
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int[] argbArray = new int[width * height];
+        int backgroundARGB = new BackgroundFinder().findBackground(argbArray);
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), argbArray, 0, image.getWidth());
+        return new Eraser().separateSilhouettesMask(argbArray, width, height, backgroundARGB);
     }
 
     /**
@@ -64,8 +66,8 @@ public class SilhouettesFinder {
      * @return - a list of silhouette sizes
      */
     public List<Integer> findSilhouettes(boolean[][] silhouetteMask) {
-        int height = silhouetteMask.length; //image.getHeight();
-        int width = silhouetteMask[0].length;//image.getWidth();
+        int height = silhouetteMask.length;
+        int width = silhouetteMask[0].length;
         boolean[][] visited = new boolean[height][width];
         BFSSearcher bfs = new BFSSearcher(silhouetteMask);
         List<Integer> silhouetteSizes = new ArrayList<>();
