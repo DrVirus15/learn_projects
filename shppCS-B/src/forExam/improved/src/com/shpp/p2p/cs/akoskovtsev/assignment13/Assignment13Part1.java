@@ -28,7 +28,7 @@ public class Assignment13Part1 {
             System.err.println("ERROR: " + e.getMessage());
         }
         if (image != null) {
-            System.out.println(new SilhouettesFinder(image).countSilhouettes());
+            System.out.println(new SilhouettesFinder().countSilhouettes(image));
         }
     }
 

@@ -73,10 +73,10 @@ public class Eraser {
         int width = image.getWidth();
         int height = image.getHeight();
         boolean[][] backgroundMask = new boolean[height][width];
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                backgroundMask[row][col] = SimilarPixelFinder.isPixelSimilar(image.getRGB(col, row), backgroundPix);
-            }
+        int[] rgbArray = new int[width * height];
+        image.getRGB(0, 0, width, height, rgbArray, 0, width);
+        for (int i = 0; i < rgbArray.length; i++) {
+            backgroundMask[i / width][i % width] = SimilarPixelFinder.isPixelSimilar(rgbArray[i], backgroundPix);
         }
         return backgroundMask;
     }
@@ -89,7 +89,7 @@ public class Eraser {
      * @return - the estimated erase radius
      */
     private int estimateEraseRadius(boolean[][] backgroundMask) {
-        SilhouettesFinder finder = new SilhouettesFinder(image);
+        SilhouettesFinder finder = new SilhouettesFinder();
         List<Integer> silhouettes = finder.findSilhouettes(backgroundMask);
         int maxSize = finder.findLargestSilhouetteSize(silhouettes);
         // Calculate radius based on the largest silhouette size

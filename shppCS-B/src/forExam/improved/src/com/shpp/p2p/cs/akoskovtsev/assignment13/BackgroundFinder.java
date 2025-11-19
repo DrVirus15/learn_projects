@@ -51,10 +51,10 @@ public class BackgroundFinder {
     private void calculateColorFrequencies() {
         int width = image.getWidth();
         int height = image.getHeight();
-        for (int row = 0; row < height; row += SAMPLE_STEP) {
-            for (int col = 0; col < width; col += SAMPLE_STEP) {
-                processPixel(image.getRGB(col, row));
-            }
+        int[] rgbArray = new int[width * height];
+        image.getRGB(0, 0, width, height, rgbArray, 0, width);
+        for (int i = 0; i < rgbArray.length; i += SAMPLE_STEP) {
+            processPixel(rgbArray[i]);
         }
     }
 
