@@ -33,12 +33,14 @@ public class SimilarPixelFinder {
      * @return - true if the pixels are similar, false otherwise
      */
     public static boolean isPixelSimilar(int pixel, int backgroundARGB) {
+        int delta = (ACCURACY_PERCENTAGE * MAX_BRIGHTNESS) / 100;
+        int squaredDelta = delta * delta;
         int diffA = ((pixel >> 24) & 0xFF) - ((backgroundARGB >> 24) & 0xFF);
         int diffR = ((pixel >> 16) & 0xFF) - ((backgroundARGB >> 16) & 0xFF);
         int diffG = ((pixel >> 8) & 0xFF) - ((backgroundARGB >> 8) & 0xFF);
         int diffB = (pixel & 0xFF) - (backgroundARGB & 0xFF);
         int distanceSquared = (diffA * diffA) + (diffR * diffR) + (diffG * diffG) + (diffB * diffB);
 
-        return distanceSquared <= SQUARED_DELTA;
+        return distanceSquared <= squaredDelta;
     }
 }

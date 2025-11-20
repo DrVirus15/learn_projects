@@ -11,9 +11,9 @@ public class SilhouettesFinder {
     /**
      * The ratio to filter out noise (small silhouettes).
      * Silhouettes smaller than this ratio of the largest silhouette will be ignored.
-     * For example, with a ratio of 0.08, silhouettes smaller than 8% of the largest silhouette will be considered noise.
+     * For example, with a ratio of 0.05, silhouettes smaller than 5% of the largest silhouette will be considered noise.
      */
-    private static final double NOISE_FILTER_RATIO = 0.08;
+    private static final double NOISE_FILTER_RATIO = 0.05;
 
     /**
      * Counts the number of valid silhouettes in the given image.
