@@ -38,6 +38,7 @@ public class SilhouettesFinder {
         int[] argbArray = new int[width * height];
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), argbArray, 0, image.getWidth());
         int backgroundARGB = new BackgroundFinder().findBackground(argbArray);
+//        int maxSizeOfSilhouette = findMaxSizeOfSilhouette(); TODO try to calculate max size of silhouette and pass to eraser
         return new Eraser().separateSilhouettesMask(argbArray, width, height, backgroundARGB);
     }
 
