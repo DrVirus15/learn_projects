@@ -1,7 +1,7 @@
 package com.shpp.p2p.cs.test;
 
-import forExam.improved.src.com.shpp.p2p.cs.akoskovtsev.assignment10.Assignment10Part1;
-import forExam.improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11.Assignment11Part1;
+import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment10.Assignment10Part1;
+import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11.Assignment11Part1;
 
 public class testCalculator {
     public static void main(String[] args) {
