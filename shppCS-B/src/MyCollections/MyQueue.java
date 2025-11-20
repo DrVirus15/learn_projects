@@ -1,4 +1,4 @@
-package com.shpp.p2p.cs.akoskovtsev.assignment9;
+package MyCollections;
 
 /**
  * A simple implementation of a queue data structure using MyLinkedList.

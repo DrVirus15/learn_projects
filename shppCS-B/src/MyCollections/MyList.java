@@ -1,4 +1,4 @@
-package com.shpp.p2p.cs.akoskovtsev.assignment9;
+package MyCollections;
 
 import java.util.Collection;
 import java.util.Iterator;
