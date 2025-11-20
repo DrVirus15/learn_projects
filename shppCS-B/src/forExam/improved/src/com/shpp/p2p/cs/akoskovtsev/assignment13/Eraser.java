@@ -72,7 +72,7 @@ public class Eraser {
         SilhouettesFinder finder = new SilhouettesFinder();
         List<Integer> silhouettes = finder.findSilhouettes(backgroundMask);
         int maxSize = finder.findLargestSilhouetteSize(silhouettes);
-        // Calculate radius based on the largest silhouette size
+        // Calculate radius based on the largest silhouette size.
         return Math.max(MIN_ERASE_RADIUS, (int) (maxSize * ERASE_RADIUS_SCALE));
     }
 

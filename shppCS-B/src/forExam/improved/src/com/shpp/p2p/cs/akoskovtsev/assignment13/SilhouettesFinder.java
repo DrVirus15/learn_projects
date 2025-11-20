@@ -36,8 +36,8 @@ public class SilhouettesFinder {
         int width = image.getWidth();
         int height = image.getHeight();
         int[] argbArray = new int[width * height];
-        int backgroundARGB = new BackgroundFinder().findBackground(argbArray);
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), argbArray, 0, image.getWidth());
+        int backgroundARGB = new BackgroundFinder().findBackground(argbArray);
         return new Eraser().separateSilhouettesMask(argbArray, width, height, backgroundARGB);
     }
 
