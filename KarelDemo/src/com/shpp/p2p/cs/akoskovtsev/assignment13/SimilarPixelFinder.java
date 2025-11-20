@@ -1,6 +1,5 @@
 package com.shpp.p2p.cs.akoskovtsev.assignment13;
 
-
 /**
  * A utility class to determine if two pixels are similar based on a defined accuracy percentage.
  */

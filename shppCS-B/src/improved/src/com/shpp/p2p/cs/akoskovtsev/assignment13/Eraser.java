@@ -1,6 +1,5 @@
 package improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13;
 
-import java.util.List;
 
 /**
  * The Eraser class is responsible for separating silhouettes from the background in an image.
@@ -20,17 +19,38 @@ public class Eraser {
     private static final int MIN_ERASE_RADIUS = 3;
 
     /**
-     * Separates silhouettes from the background in the given ARGB array of the image.
+     * Creates a background mask from the ARGB array of the image.
      *
-     * @param argbArray     - the array of ARGB pixel values
-     * @param width         - the width of the image
-     * @param height        - the height of the image
+     * @param argbArray      - the array of ARGB pixel values
      * @param backgroundARGB - the ARGB value of the background color
-     * @return - a 2D boolean array where true indicates a background pixel after erasing near silhouettes
+     * @param width          - the width of the image
+     * @param height         - the height of the image
+     * @return - a 2D boolean array where true indicates a background pixel
      */
-    public boolean[][] separateSilhouettesMask(int[] argbArray, int width, int height, int backgroundARGB) {
+    public boolean[][] findBackgroundMask(int[] argbArray, int backgroundARGB, int width, int height) {
+        boolean[][] backgroundMask = new boolean[height][width];
+        for (int i = 0; i < argbArray.length; i++) {
+            backgroundMask[i / width][i % width] = SimilarPixelFinder.isPixelSimilar(argbArray[i], backgroundARGB);
+        }
+        return backgroundMask;
+    }
+
+    /**
+     * Separates silhouettes from the background by creating a mask.
+     * It first identifies background pixels, estimates an erase radius,
+     * and then erases pixels that are close to the background.
+     *
+     * @param argbArray          - the array of ARGB pixel values
+     * @param width              - the width of the image
+     * @param height             - the height of the image
+     * @param backgroundARGB     - the ARGB value of the background color
+     * @param maxSizeOfSilhouette - the size of the largest silhouette in the image
+     * @return - a 2D boolean array where true indicates a background pixel and false indicates silhouette pixel
+     */
+    public boolean[][] separateSilhouettesMask(int[] argbArray, int width, int height,
+                                               int backgroundARGB, int maxSizeOfSilhouette) {
         boolean[][] backgroundMask = findBackgroundMask(argbArray, backgroundARGB, width, height);
-        int radius = estimateEraseRadius(backgroundMask);
+        int radius = Math.max(MIN_ERASE_RADIUS, (int) (maxSizeOfSilhouette * ERASE_RADIUS_SCALE));
         boolean[][] erasedImageBgMask = new boolean[height][width];
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
@@ -42,38 +62,6 @@ public class Eraser {
             }
         }
         return erasedImageBgMask;
-    }
-
-    /**
-     * Creates a background mask from the ARGB array of the image.
-     *
-     * @param argbArray     - the array of ARGB pixel values
-     * @param backgroundARGB - the ARGB value of the background color
-     * @param width         - the width of the image
-     * @param height        - the height of the image
-     * @return - a 2D boolean array where true indicates a background pixel
-     */
-    private boolean[][] findBackgroundMask(int[] argbArray, int backgroundARGB, int width, int height) {
-        boolean[][] backgroundMask = new boolean[height][width];
-        for (int i = 0; i < argbArray.length; i++) {
-            backgroundMask[i / width][i % width] = SimilarPixelFinder.isPixelSimilar(argbArray[i], backgroundARGB);
-        }
-        return backgroundMask;
-    }
-
-    /**
-     * Estimates the erase radius based on the size of the largest silhouette found in the image.
-     * The radius is calculated as a fraction of the largest silhouette size, with a minimum threshold
-     *
-     * @param backgroundMask - a 2D boolean array where true indicates a background pixel
-     * @return - the estimated erase radius
-     */
-    private int estimateEraseRadius(boolean[][] backgroundMask) {
-        SilhouettesFinder finder = new SilhouettesFinder();
-        List<Integer> silhouettes = finder.findSilhouettes(backgroundMask);
-        int maxSize = finder.findLargestSilhouetteSize(silhouettes);
-        // Calculate radius based on the largest silhouette size.
-        return Math.max(MIN_ERASE_RADIUS, (int) (maxSize * ERASE_RADIUS_SCALE));
     }
 
     /**
