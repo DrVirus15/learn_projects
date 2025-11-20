@@ -77,15 +77,25 @@ public class MyTestList {
         testStack();
     }
 
+    /**
+     * Tests the size method of MyList.
+     *
+     * @param myList the MyList instance to test
+     */
     private static void testSize(MyList<String> myList) {
         String testName = "size(): " + myList.getClass().getSimpleName();
-        if(myList.size() == DEFAULT_SIZE){
+        if (myList.size() == DEFAULT_SIZE) {
             printPASS(testName);
         } else {
             printFAIL(testName);
         }
     }
 
+    /**
+     * Tests the contains method of MyList.
+     *
+     * @param myList the MyList instance to test
+     */
     private static void testContains(MyList<String> myList) {
         String testName = "contains(): " + myList.getClass().getSimpleName();
         ArrayList<Boolean> testResult = new ArrayList<>();
@@ -100,6 +110,13 @@ public class MyTestList {
         printPASS(testName);
     }
 
+    /**
+     * Tests if MyList does not contain a specific object.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testNotContainsObject(MyList<String> myList, String testName) {
         String testCaseName = testName + " - " + getCurrentMethodName();
         if (myList.contains(TEST_STRING)) {
@@ -109,6 +126,13 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Tests if MyList contains null after adding it.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testContainsNull(MyList<String> myList, String testName) {
         String testCaseName = testName + " - " + getCurrentMethodName();
         myList.add(null);
@@ -119,6 +143,13 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Tests if MyList contains a specific object after adding it.
+     *
+     * @param myList   the MyList instance to test
+     * @param testName the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testContainsObject(MyList<String> myList, String testName) {
         String testCaseName = testName + " - " + getCurrentMethodName();
         String testString = TEST_STRING;
@@ -130,6 +161,11 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Tests the toString method of MyList.
+     *
+     * @param myList the MyList instance to test
+     */
     private static void testToString(MyList<String> myList) {
         String testName = "toString(): " + myList.getClass().getSimpleName();
         StringBuilder expectedString = new StringBuilder("[");
@@ -169,6 +205,11 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the addAll, addAll(index), and updateCapacity methods of MyList.
+     *
+     * @param myList - the MyList instance to test
+     */
     private static void testAddAll(MyList<String> myList) {
         String testName = "addAll() & addAll(index) & updateCapacity(): " + myList.getClass().getSimpleName();
         ArrayList<Boolean> testResult = new ArrayList<>();
@@ -188,6 +229,13 @@ public class MyTestList {
         printPASS(testName);
     }
 
+    /**
+     * Tests adding a collection to MyList and verifies the size after addition.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testAddAllSize(MyList<String> myList, String testName) {
         ArrayList<String> collectionToAdd = createTestCollection();
         int requiredNewSize = collectionToAdd.size() + myList.size();
@@ -202,6 +250,13 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Tests adding an empty collection to MyList at the start index.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testAddCollectionEmptyToStart(MyList<String> myList, String testName) {
         ArrayList<String> collectionToAdd = new ArrayList<>();
         String testCaseName = testName + " - " + getCurrentMethodName();
@@ -212,6 +267,13 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Tests adding a collection to MyList at the start index.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testAddCollectionToStart(MyList<String> myList, String testName) {
         ArrayList<String> collectionToAdd = createTestCollection();
         String testCaseName = testName + " - " + getCurrentMethodName();
@@ -219,6 +281,13 @@ public class MyTestList {
         return testAddCollection(myList, collectionToAdd, testCaseName, indexToInput);
     }
 
+    /**
+     * Tests adding a collection to MyList at the end index.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testAddCollectionAtFinish(MyList<String> myList, String testName) {
         String testCaseName = testName + " - " + getCurrentMethodName();
         int indexToInput = myList.size();
@@ -226,6 +295,13 @@ public class MyTestList {
         return testAddCollection(myList, collectionToAdd, testCaseName, indexToInput);
     }
 
+    /**
+     * Tests adding a collection to MyList at the middle index.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testAddCollectionToMiddle(MyList<String> myList, String testName) {
         ArrayList<String> collectionToAdd = createTestCollection();
         int indexToInput = DEFAULT_SIZE / 2;
@@ -233,6 +309,13 @@ public class MyTestList {
         return testAddCollection(myList, collectionToAdd, testCaseName, indexToInput);
     }
 
+    /**
+     * Tests adding a collection to MyList at the last element index.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testAddCollectionToLastElement(MyList<String> myList, String testName) {
         ArrayList<String> collectionToAdd = createTestCollection();
         String testCaseName = testName + " - " + getCurrentMethodName();
@@ -240,6 +323,15 @@ public class MyTestList {
         return testAddCollection(myList, collectionToAdd, testCaseName, indexToInput);
     }
 
+    /**
+     * Tests adding a collection to MyList at an out-of-bounds index.
+     * Returns true if IndexOutOfBoundsException is thrown.
+     *
+     * @param myList   - the MyList instance to test
+     * @param testName - the name of the test
+     * @param index    - the out-of-bounds index
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testOutOfBounds(MyList<String> myList, String testName, int index) {
         ArrayList<String> collectionToAdd = createTestCollection();
         boolean exceptionThrown = false;
@@ -254,6 +346,15 @@ public class MyTestList {
         return exceptionThrown;
     }
 
+    /**
+     * Tests adding a collection to MyList at a specified index.
+     *
+     * @param myList          - the MyList instance to test
+     * @param collectionToAdd - the collection to be added
+     * @param testName        - the name of the test
+     * @param indexToInput    - the index at which to add the collection
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testAddCollection(MyList<String> myList,
                                              ArrayList<String> collectionToAdd,
                                              String testName,
@@ -290,6 +391,13 @@ public class MyTestList {
                 isSizeCorrect);
     }
 
+    /**
+     * Checks the test conditions and prints failure messages if any condition is not met.
+     *
+     * @param testName   the name of the test
+     * @param conditions the conditions to check
+     * @return true if all conditions are met, false otherwise
+     */
     private static boolean checkTestConditions(String testName, boolean... conditions) {
         String[] conditionsNames = {
                 "First Element",
@@ -306,6 +414,11 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Creates a test collection of strings representing integers from MAXIMUM_SIZE down to 1.
+     *
+     * @return the created test collection
+     */
     private static ArrayList<String> createTestCollection() {
         ArrayList<String> testCollection = new ArrayList<>();
         for (int i = MAXIMUM_SIZE; i > 0; i--) {
@@ -375,6 +488,14 @@ public class MyTestList {
         printPASS(testName);
     }
 
+    /**
+     * Tests the remove(object) method of MyList.
+     *
+     * @param myList          - the MyList instance to test
+     * @param expectedStrings - the expected strings in the list
+     * @param testName        - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testRemoveObject(MyList<String> myList, String[] expectedStrings, String testName) {
         String testCaseName = testName + " - " + getCurrentMethodName() + " incorrect.";
         int middleIndex = myList.size() / 2;
@@ -387,6 +508,14 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Tests the remove(index) method of MyList.
+     *
+     * @param myList          - the MyList instance to test
+     * @param expectedStrings - the expected strings in the list
+     * @param testName        - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testRemoveIndex(MyList<String> myList, String[] expectedStrings, String testName) {
         String testCaseName = testName + " - " + getCurrentMethodName() + " incorrect.";
         int middleIndex = myList.size() / 2;
@@ -397,6 +526,14 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Tests the removeFirst method of MyList.
+     *
+     * @param myList          - the MyList instance to test
+     * @param expectedStrings - the expected strings in the list
+     * @param testName        - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testRemoveFirst(MyList<String> myList, String[] expectedStrings, String testName) {
         String testCaseName = testName + " - " + getCurrentMethodName() + " incorrect.";
         if (!myList.removeFirst().equals(expectedStrings[0])) {
@@ -406,6 +543,14 @@ public class MyTestList {
         return true;
     }
 
+    /**
+     * Tests the removeLast method of MyList.
+     *
+     * @param myList          - the MyList instance to test
+     * @param expectedStrings - the expected strings in the list
+     * @param testName        - the name of the test
+     * @return true if the test passed, false otherwise
+     */
     private static boolean testRemoveLast(MyList<String> myList, String[] expectedStrings, String testName) {
         String testCaseName = testName + " - " + getCurrentMethodName() + " incorrect.";
         if (!myList.removeLast().equals(expectedStrings[expectedStrings.length - 1])) {
@@ -464,6 +609,13 @@ public class MyTestList {
         }
     }
 
+    /**
+     * Tests the descending order of elements in MyLinkedList using descendingIterator.
+     *
+     * @param myList   - the MyLinkedList instance to test
+     * @param testName - the name of the test
+     * @return true if the order is correct, false otherwise
+     */
     private static boolean testDescendingOrder(MyLinkedList<String> myList, String testName) {
         int lastIndex = myList.size() - 1;
         String expectedValue = String.valueOf(lastIndex);

@@ -489,7 +489,7 @@ public class MyLinkedList<E> implements Iterable<E>, MyList<E> {
      * @return an iterator over the elements in the linked list
      */
     @Override
-    public Iterator<E> iterator() { // TODO realise Link Indexes
+    public Iterator<E> iterator() {
         return new Iterator<>() {
             private Link current = first;
             private Link prevLink = null;
