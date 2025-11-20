@@ -17,9 +17,7 @@ public class Assignment11Part1 {
      */
     private static final Map<String, Operator> OPERATOR_MAP = new HashMap<>();
 
-    /*
-     * Static block to initialize the operator map.
-     */
+    // Static block to initialize the operator map
     static {
         OPERATOR_MAP.put("+", new Plus());
         OPERATOR_MAP.put("-", new Minus());
@@ -264,7 +262,7 @@ public class Assignment11Part1 {
     /**
      * Handles the closing bracket by popping operators from the stack to the RPN output
      * until the corresponding opening bracket is found.
-     *
+     * If no opening bracket is found, an EmptyStackException is thrown.
      * @param opStack - stack of operators
      * @param rpn     - output list for RPN
      */

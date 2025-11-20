@@ -18,6 +18,10 @@ public interface Operator {
 
     /**
      * Get the precedence level of the operator. Higher values indicate higher precedence.
+     * 1 - low precedence (e.g., +, -)
+     * 2 - medium precedence (e.g., *, /)
+     * 3 - high precedence (e.g., ^)
+     * 4 - very high precedence (e.g., functions like sin, cos, etc.)
      */
     int getPrecedence();
 
