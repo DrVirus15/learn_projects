@@ -1,7 +1,7 @@
 package improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13;
 
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
 /**
@@ -41,7 +41,7 @@ public class BFSSearcher {
      * @return - the count of connected pixels that are part of the silhouette
      */
     public int runBFS(boolean[][] isVisited, int startRow, int startCol) {
-        Queue<ImagePoint> queue = new LinkedList<>();
+        ArrayDeque<ImagePoint> queue = new ArrayDeque<>();
         queue.offer(new ImagePoint(startRow, startCol));
         isVisited[startRow][startCol] = true;
         int size = 0;

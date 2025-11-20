@@ -16,16 +16,6 @@ public class SimilarPixelFinder {
     private static final int MAX_BRIGHTNESS = 255;
 
     /**
-     * The squared delta value used for comparison, calculated based on the accuracy percentage.
-     */
-    private static final int SQUARED_DELTA;
-
-    static {
-        int delta = (int) (ACCURACY_PERCENTAGE * MAX_BRIGHTNESS / 100.0);
-        SQUARED_DELTA = delta * delta;
-    }
-
-    /**
      * Determines if two pixels are similar based on the defined accuracy percentage.
      *
      * @param pixel          - the ARGB value of the pixel to compare
