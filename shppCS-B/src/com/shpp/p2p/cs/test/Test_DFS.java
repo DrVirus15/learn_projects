@@ -1,7 +1,7 @@
 package com.shpp.p2p.cs.test;
 
 import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.Assignment13Part1;
-import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.ImageSilhouetteProcessor;
+import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.SilhouetteCounter;
 import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.ImageLoader;
 
 import javax.imageio.ImageIO;
@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 public class Test_DFS {
+    public String laptopFilePatths = "KarelDemo/assets/test3.png" +
+            "\nKarelDemo/assets/test2.png";
     public String filePaths = "assets/1_4.png" +
             "\nassets/4.jpg" +
             "\nassets/4.png" +
@@ -54,6 +56,7 @@ public class Test_DFS {
             "\nassets/separate/test8.png" +
             "\nassets/separate/test9.png";
 
+public int[] laptopResults = {4, 8};
 
     public int[] results = {4, 4, 5, 8, 10, 14, 1, 1, 1, 7, 2,
             2, 4, 4, 3, 4, 4, 4, 4, 4, 2, 2, 1,
@@ -64,7 +67,8 @@ public class Test_DFS {
     public static void main(String[] args) throws IOException {
         Test_DFS test_dfs = new Test_DFS();
         PrintStream originalOut = System.out;
-        String[] paths = test_dfs.filePaths.split("\n");
+//        String[] paths = test_dfs.filePaths.split("\n");
+        String[] paths = test_dfs.laptopFilePatths.split("\n");
         for (int i = 0; i < paths.length; i++) {
             String[] path = new String[]{paths[i]};
 //            String[] filePath = null;
@@ -81,13 +85,14 @@ public class Test_DFS {
                 System.setOut(originalOut);
             }
             int result = Integer.parseInt(output);
-            int expected = test_dfs.results[i];
+//            int expected = test_dfs.results[i];
+            int expected = test_dfs.laptopResults[i];
             if (result != expected) {
                 System.err.println("Test failed for " + path[0] + ". Expected: " + expected + ", but got: " + result);
                 BufferedImage currentImage = new ImageLoader().load(path[0]);
-                ImageSilhouetteProcessor imageSilhouetteProcessor = new ImageSilhouetteProcessor();
-                boolean[][] silhouetteMask = imageSilhouetteProcessor.createInitialMask(currentImage);
-                boolean[][] separatedSilhouetteMask = imageSilhouetteProcessor.createSeparatedMask(silhouetteMask);
+                SilhouetteCounter silhouetteCounter = new SilhouetteCounter();
+                boolean[][] silhouetteMask = silhouetteCounter.buildSilhouetteMask(currentImage);
+                boolean[][] separatedSilhouetteMask = silhouetteCounter.separateSilhouettes(silhouetteMask);
                 saveFailedTest(currentImage, separatedSilhouetteMask, path[0]);
             } else {
                 System.out.println("Test passed for " + path[0] + ". Result: " + result);
@@ -101,7 +106,8 @@ public class Test_DFS {
     private static void saveFailedTest(BufferedImage image, boolean[][] separatedSilhouetteMask, String path) {
 
         String format = "png";
-        String filePathForNewFile = "assets/failedTests/" + getFileName(path) + "." + format;
+//        String filePathForNewFile = "assets/failedTests/" + getFileName(path) + "." + format;
+        String filePathForNewFile = "KarelDemo/assets/failedTests/" + getFileName(path) + "." + format;
         int size = image.getHeight() * image.getWidth();
         BufferedImage failedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
         int[][] imageDouble = new int[image.getHeight()][image.getWidth()];
