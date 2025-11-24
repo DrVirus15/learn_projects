@@ -81,7 +81,7 @@ public class BFSSearcher {
      * @return - true if the pixel is valid, false otherwise
      */
     private boolean isValid(int row, int col, boolean[][] isVisited) {
-        return isInBounds(row, col) && !isVisited[row][col] && !backgroundMask[row][col];
+        return isInBounds(row, col) && !isVisited[row][col] && backgroundMask[row][col];
     }
 
     /**
