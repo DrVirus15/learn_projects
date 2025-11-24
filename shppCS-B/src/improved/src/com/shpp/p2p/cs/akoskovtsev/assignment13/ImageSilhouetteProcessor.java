@@ -7,9 +7,9 @@ public class ImageSilhouetteProcessor {
     /**
      * The ratio to filter out noise (small silhouettes).
      * Silhouettes smaller than this ratio of the largest silhouette will be ignored.
-     * For example, with a ratio of 0.05, silhouettes smaller than 5% of the largest silhouette will be considered noise.
+     * For example, with a ratio of 0.02, silhouettes smaller than 2% of the largest silhouette will be considered noise.
      */
-    private static final double NOISE_FILTER_RATIO = 0.05;
+    private static final double NOISE_FILTER_RATIO = 0.02;
 
     /**
      * Scale factor to determine the erase radius based on the largest silhouette size.
@@ -33,20 +33,32 @@ public class ImageSilhouetteProcessor {
     }
 
     public int processImageAndCountSilhouettes(BufferedImage image) {
+        boolean[][] silhouetteMask = createInitialMask(image);
+
+        boolean[][] separatedSilhouetteMask = createSeparatedMask(silhouetteMask);
+
+        List<Integer> separatedSilhouettes = silhouettesFinder.findSilhouettes(separatedSilhouetteMask);
+        int minValidSize = (int) (findMaxSizeOfSilhouette(silhouetteMask) * NOISE_FILTER_RATIO);
+        return silhouettesFinder.countValidSilhouettes(separatedSilhouettes, minValidSize);
+    }
+
+    public boolean[][] createSeparatedMask(boolean[][] silhouetteMask) {
+        int radius = Math.max(MIN_ERASE_RADIUS, (int)(findMaxSizeOfSilhouette(silhouetteMask) * ERASE_RADIUS_SCALE));
+        return eraser.separateSilhouettesMask(silhouetteMask, radius);
+    }
+
+    private int findMaxSizeOfSilhouette(boolean[][] silhouetteMask) {
+        List<Integer> silhouettes = silhouettesFinder.findSilhouettes(silhouetteMask);
+        return silhouettesFinder.findLargestSilhouetteSize(silhouettes);
+    }
+
+    public boolean[][] createInitialMask(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
         int[] argbArray = new int[width * height];
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), argbArray, 0, image.getWidth());
-
         int backgroundARGB = backgroundFinder.findBackground(argbArray);
-        boolean[][] silhouetteMask = createSilhouetteMask(argbArray, backgroundARGB, width, height);
-        List<Integer> silhouettes = silhouettesFinder.findSilhouettes(silhouetteMask);
-        int maxSizeOfSilhouette = silhouettesFinder.findLargestSilhouetteSize(silhouettes);
-        int radius = Math.max(MIN_ERASE_RADIUS, (int) (maxSizeOfSilhouette * ERASE_RADIUS_SCALE));
-        boolean[][] separatedSilhouetteMask = eraser.separateSilhouettesMask(silhouetteMask, radius);
-        List<Integer> separatedSilhouettes = silhouettesFinder.findSilhouettes(separatedSilhouetteMask);
-        int minValidSize = (int) (maxSizeOfSilhouette * NOISE_FILTER_RATIO);
-        return silhouettesFinder.countValidSilhouettes(separatedSilhouettes, minValidSize);
+        return createSilhouetteMask(argbArray, backgroundARGB, width, height);
     }
 
     private boolean[][] createSilhouetteMask(int[] argbArray, int backgroundARGB, int width, int height) {

@@ -1,6 +1,9 @@
 package com.shpp.p2p.cs.test;
 
 import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.Assignment13Part1;
+import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.ImageSilhouetteProcessor;
+import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.ImageLoader;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -52,13 +55,13 @@ public class Test_DFS {
             "\nassets/separate/test9.png";
 
 
-    public int[] results = {4, 4, 5, 8, 10,11,1, 1, 1, 7, 2,
-                            2, 4, 4, 3, 4, 4, 4, 4, 4, 2, 2, 1,
-                            4, 2, 6, 4, 1, 2, 3, 1, 7, 8, 0,
-                            8, 30,2, 2, 2, 2, 2, 2};
+    public int[] results = {4, 4, 5, 8, 10, 11, 1, 1, 1, 7, 2,
+            2, 4, 4, 3, 4, 4, 4, 4, 4, 2, 2, 1,
+            4, 2, 6, 4, 1, 2, 3, 1, 7, 8, 0,
+            8, 30, 2, 2, 2, 2, 2, 2};
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Test_DFS test_dfs = new Test_DFS();
         PrintStream originalOut = System.out;
         String[] paths = test_dfs.filePaths.split("\n");
@@ -81,47 +84,67 @@ public class Test_DFS {
             int expected = test_dfs.results[i];
             if (result != expected) {
                 System.err.println("Test failed for " + path[0] + ". Expected: " + expected + ", but got: " + result);
+                BufferedImage currentImage = new ImageLoader().load(path[0]);
+                ImageSilhouetteProcessor imageSilhouetteProcessor = new ImageSilhouetteProcessor();
+                boolean[][] silhouetteMask = imageSilhouetteProcessor.createInitialMask(currentImage);
+                boolean[][] separatedSilhouetteMask = imageSilhouetteProcessor.createSeparatedMask(silhouetteMask);
+                saveFailedTest(currentImage, separatedSilhouetteMask, path[0]);
             } else {
                 System.out.println("Test passed for " + path[0] + ". Result: " + result);
             }
         }
 
 
-        //        String filePathForNewFile = "assets/zzz.png";
-//        String format = "png";
-//        int size = image.getHeight() * image.getWidth();
-//        BufferedImage dummyImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-//        int[][] imageDouble = new int[image.getHeight()][image.getWidth()];
-//        for (int row = 0; row < image.getHeight(); row++) {
-//            for (int col = 0; col < image.getWidth(); col++) {
-//                if(processedImage[row][col]){
-//                    imageDouble[row][col] = -1;
-//                } else {
-//                    imageDouble[row][col] = 0;
-//                }
-//            }
-//        }
-//        int[] odnovumirniyMassive = new int[size];
-//        int index = 0;
-//        for (int[] ints : imageDouble) {
-//            for (int col = 0; col < imageDouble[0].length; col++) {
-//                odnovumirniyMassive[index] = ints[col];
-//                index++;
-//            }
-//        }
-//        dummyImage.setRGB(0, 0, image.getWidth(), image.getHeight(),
-//                odnovumirniyMassive, 0, image.getWidth());
-//        saveImage(dummyImage, filePathForNewFile, format);
+    }
+
+
+    private static void saveFailedTest(BufferedImage image, boolean[][] separatedSilhouetteMask, String path) {
+
+        String format = "png";
+        String filePathForNewFile = "assets/failedTests/" + getFileName(path) + "." + format;
+        int size = image.getHeight() * image.getWidth();
+        BufferedImage failedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+        int[][] imageDouble = new int[image.getHeight()][image.getWidth()];
+        for (int row = 0; row < image.getHeight(); row++) {
+            for (int col = 0; col < image.getWidth(); col++) {
+                if (separatedSilhouetteMask[row][col]) {
+                    imageDouble[row][col] = -1;
+                } else {
+                    imageDouble[row][col] = 0;
+                }
+            }
+        }
+        int[] odnovumirniyMassive = new int[size];
+        int index = 0;
+        for (int[] ints : imageDouble) {
+            for (int col = 0; col < imageDouble[0].length; col++) {
+                odnovumirniyMassive[index] = ints[col];
+                index++;
+            }
+        }
+        failedImage.setRGB(0, 0, image.getWidth(), image.getHeight(),
+                odnovumirniyMassive, 0, image.getWidth());
+        saveImage(failedImage, filePathForNewFile, format);
 
 
     }
+
+    private static String getFileName(String filePath) {
+        int lastSeparatorIndex = filePath.lastIndexOf('/');
+        if (lastSeparatorIndex == -1) {
+            lastSeparatorIndex = filePath.lastIndexOf('\\');
+        }
+        String fileNameWithExtension = lastSeparatorIndex == -1 ? filePath : filePath.substring(lastSeparatorIndex + 1);
+        int lastDotIndex = fileNameWithExtension.lastIndexOf('.');
+        return fileNameWithExtension.substring(0, lastDotIndex);
+    }
+
     private static void saveImage(BufferedImage image, String filePath, String format) {
         try {
             File outputfile = new File(filePath);
             ImageIO.write(image, format, outputfile);
-            System.out.println("Зображення успішно збережено за шляхом: " + filePath);
         } catch (IOException e) {
-            System.err.println("Помилка при збереженні зображення: " + e.getMessage());
+            System.out.println("Помилка при збереженні зображення: " + e.getMessage());
             e.printStackTrace();
         }
     }
