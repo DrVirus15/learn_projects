@@ -30,7 +30,6 @@ public class SimilarPixelFinder {
         int diffG = ((pixel >> 8) & 0xFF) - ((backgroundARGB >> 8) & 0xFF);
         int diffB = (pixel & 0xFF) - (backgroundARGB & 0xFF);
         int distanceSquared = (diffA * diffA) + (diffR * diffR) + (diffG * diffG) + (diffB * diffB);
-
         return distanceSquared <= squaredDelta;
     }
 }

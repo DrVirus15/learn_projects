@@ -1,6 +1,5 @@
 package improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +8,11 @@ import java.util.List;
  */
 public class SilhouettesFinder {
 
+    /**
+     * Finds all silhouettes in the given silhouette mask using BFS and returns their sizes.
+     * @param silhouetteMask - a 2D boolean array representing the silhouette mask
+     * @return - a list of sizes of all found silhouettes
+     */
     public List<Integer> findSilhouettes(boolean[][] silhouetteMask) {
         int height = silhouetteMask.length;
         int width = silhouetteMask[0].length;
@@ -17,7 +21,7 @@ public class SilhouettesFinder {
         List<Integer> silhouetteSizes = new ArrayList<>();
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                // silhouetteMask is true for background pixels, so we start BFS on false (silhouette) pixels
+                // If the pixel is part of a silhouette and hasn't been visited yet, perform BFS
                 if (!visited[row][col] && silhouetteMask[row][col]) {
                     silhouetteSizes.add(bfs.runBFS(visited, row, col));
                 }

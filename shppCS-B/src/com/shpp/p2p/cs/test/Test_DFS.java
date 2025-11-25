@@ -1,6 +1,7 @@
 package com.shpp.p2p.cs.test;
 
 import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.Assignment13Part1;
+import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.MaskBuilder;
 import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.SilhouetteCounter;
 import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13.ImageLoader;
 
@@ -67,8 +68,8 @@ public int[] laptopResults = {4, 8};
     public static void main(String[] args) throws IOException {
         Test_DFS test_dfs = new Test_DFS();
         PrintStream originalOut = System.out;
-//        String[] paths = test_dfs.filePaths.split("\n");
-        String[] paths = test_dfs.laptopFilePatths.split("\n");
+        String[] paths = test_dfs.filePaths.split("\n");
+//        String[] paths = test_dfs.laptopFilePatths.split("\n");
         for (int i = 0; i < paths.length; i++) {
             String[] path = new String[]{paths[i]};
 //            String[] filePath = null;
@@ -85,17 +86,20 @@ public int[] laptopResults = {4, 8};
                 System.setOut(originalOut);
             }
             int result = Integer.parseInt(output);
-//            int expected = test_dfs.results[i];
-            int expected = test_dfs.laptopResults[i];
+            int expected = test_dfs.results[i];
+//            int expected = test_dfs.laptopResults[i];
+            BufferedImage currentImage = new ImageLoader().load(path[0]);
+            SilhouetteCounter silhouetteCounter = new SilhouetteCounter();
+            boolean[][] silhouetteMask = MaskBuilder.buildSilhouetteMask(currentImage);
+            boolean[][] separatedSilhouetteMask = silhouetteCounter.separateSilhouettes(silhouetteMask);
             if (result != expected) {
                 System.err.println("Test failed for " + path[0] + ". Expected: " + expected + ", but got: " + result);
-                BufferedImage currentImage = new ImageLoader().load(path[0]);
-                SilhouetteCounter silhouetteCounter = new SilhouetteCounter();
-                boolean[][] silhouetteMask = silhouetteCounter.buildSilhouetteMask(currentImage);
-                boolean[][] separatedSilhouetteMask = silhouetteCounter.separateSilhouettes(silhouetteMask);
-                saveFailedTest(currentImage, separatedSilhouetteMask, path[0]);
+                String fileName = "assets/failedTests/" + getFileName(path[0]) + ".";
+                saveTestResult(currentImage, separatedSilhouetteMask, path[0], fileName);
             } else {
                 System.out.println("Test passed for " + path[0] + ". Result: " + result);
+                String fileName = "assets/passedTests/" + getFileName(path[0]) + ".";
+//                saveFailedTest(currentImage, separatedSilhouetteMask, path[0], fileName);
             }
         }
 
@@ -103,17 +107,17 @@ public int[] laptopResults = {4, 8};
     }
 
 
-    private static void saveFailedTest(BufferedImage image, boolean[][] separatedSilhouetteMask, String path) {
+    private static void saveTestResult(BufferedImage image, boolean[][] separatedSilhouetteMask, String path, String fileName) {
 
         String format = "png";
-//        String filePathForNewFile = "assets/failedTests/" + getFileName(path) + "." + format;
-        String filePathForNewFile = "KarelDemo/assets/failedTests/" + getFileName(path) + "." + format;
+        String filePathForNewFile = fileName + format;
+//        String filePathForNewFile = "KarelDemo/assets/failedTests/" + getFileName(path) + "." + format;
         int size = image.getHeight() * image.getWidth();
         BufferedImage failedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
         int[][] imageDouble = new int[image.getHeight()][image.getWidth()];
         for (int row = 0; row < image.getHeight(); row++) {
             for (int col = 0; col < image.getWidth(); col++) {
-                if (separatedSilhouetteMask[row][col]) {
+                if (!separatedSilhouetteMask[row][col]) {
                     imageDouble[row][col] = -1;
                 } else {
                     imageDouble[row][col] = 0;

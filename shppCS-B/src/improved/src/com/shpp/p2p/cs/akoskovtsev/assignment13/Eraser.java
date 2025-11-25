@@ -2,39 +2,41 @@ package improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13;
 
 
 /**
- * The Eraser class is responsible for separating silhouettes from the background in an image.
- * It identifies background pixels, estimates an appropriate erase radius based on silhouette sizes,
- * and creates a mask that represents the separated silhouettes.
+ * A class responsible for erasing parts of silhouettes in a binary mask.
  */
 public class Eraser {
 
-    public boolean[][] separateSilhouettesMask(boolean[][] backgroundMask, int radius) {
-        int width = backgroundMask[0].length;
-        int height = backgroundMask.length;
-
-        boolean[][] erasedImageBgMask = new boolean[height][width];
-
+    /**
+     * Separates silhouettes in the given silhouette mask by erasing pixels near the edges.
+     *
+     * @param silhouetteMask the binary mask representing silhouettes
+     * @param radius         the radius around each pixel to check for edge proximity
+     * @return a new binary mask with separated silhouettes
+     */
+    public boolean[][] separateSilhouettesMask(boolean[][] silhouetteMask, int radius) {
+        int width = silhouetteMask[0].length;
+        int height = silhouetteMask.length;
+        boolean[][] erasedImageMask = new boolean[height][width];
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                if (backgroundMask[row][col] && isNeedsErasing(col, row, radius, backgroundMask)) {
-                    erasedImageBgMask[row][col] = true;
+                if (silhouetteMask[row][col] && isNeedsErasing(col, row, radius, silhouetteMask)) {
+                    erasedImageMask[row][col] = false;
                 } else {
-                    erasedImageBgMask[row][col] = backgroundMask[row][col];
+                    erasedImageMask[row][col] = silhouetteMask[row][col];
                 }
             }
         }
-        return erasedImageBgMask;
+        return erasedImageMask;
     }
 
     /**
-     * Determines if a pixel at (col, row) needs to be erased based on its proximity to background pixels
-     * within a specified radius.
+     * Determines if a pixel needs to be erased based on its proximity to the edge of a silhouette.
      *
-     * @param col          - the column index of the pixel
-     * @param row          - the row index of the pixel
-     * @param radius       - the radius to check for background pixels
-     * @param isSilhouette - a 2D boolean array where true indicates a background pixel
-     * @return - true if the pixel needs to be erased, false otherwise
+     * @param col          the column index of the pixel
+     * @param row          the row index of the pixel
+     * @param radius       the radius around the pixel to check
+     * @param isSilhouette the binary mask representing silhouettes
+     * @return true if the pixel needs to be erased, false otherwise
      */
     private boolean isNeedsErasing(int col, int row, int radius, boolean[][] isSilhouette) {
         int width = isSilhouette[0].length;
@@ -46,7 +48,7 @@ public class Eraser {
         for (int y = yMin; y <= yMax; y++) {
             if (!isSilhouette[y][xMin] || !isSilhouette[y][xMax]) return true;
         }
-        for (int x = xMin; x < xMax; x++) {
+        for (int x = xMin; x <= xMax; x++) {
             if (!isSilhouette[yMin][x] || !isSilhouette[yMax][x]) return true;
         }
         return false;

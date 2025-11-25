@@ -10,9 +10,10 @@ import java.util.Queue;
  */
 public class BFSSearcher {
     /**
-     * A 2D boolean array where true indicates a background pixel and false indicates a silhouette pixel.
+     * The silhouette mask representing the image, where true indicates a silhouette pixel
+     * and false indicates background.
      */
-    private final boolean[][] backgroundMask;
+    private final boolean[][] silhouetteMask;
     /**
      * Directions for the 8 neighboring pixels (up, down, left, right, and diagonals)
      */
@@ -23,12 +24,11 @@ public class BFSSearcher {
     };
 
     /**
-     * Constructor to initialize the BFSSearcher with the background mask.
-     *
-     * @param backgroundMask - a 2D boolean array where true indicates a background pixel
+     * Constructor to initialize the BFSSearcher with the silhouette mask.
+     * @param silhouetteMask - a 2D boolean array representing the silhouette mask
      */
-    public BFSSearcher(boolean[][] backgroundMask) {
-        this.backgroundMask = backgroundMask;
+    public BFSSearcher(boolean[][] silhouetteMask) {
+        this.silhouetteMask = silhouetteMask;
     }
 
     /**
@@ -73,15 +73,15 @@ public class BFSSearcher {
     }
 
     /**
-     * Checks if a pixel is valid for exploration (within bounds, not visited, and not a background pixel).
-     *
-     * @param row       - the row index of the pixel
-     * @param col       - the column index of the pixel
+     * Checks if the given pixel is valid for exploration.
+     * A pixel is considered valid if it is within bounds, not visited, and part of the silhouette.
+     * @param row - the row index of the pixel
+     * @param col - the column index of the pixel
      * @param isVisited - a 2D boolean array to track visited pixels
      * @return - true if the pixel is valid, false otherwise
      */
     private boolean isValid(int row, int col, boolean[][] isVisited) {
-        return isInBounds(row, col) && !isVisited[row][col] && backgroundMask[row][col];
+        return isInBounds(row, col) && !isVisited[row][col] && silhouetteMask[row][col];
     }
 
     /**
@@ -92,6 +92,6 @@ public class BFSSearcher {
      * @return - true if the indices are within bounds, false otherwise
      */
     private boolean isInBounds(int row, int col) {
-        return row >= 0 && col >= 0 && row < backgroundMask.length && col < backgroundMask[0].length;
+        return row >= 0 && col >= 0 && row < silhouetteMask.length && col < silhouetteMask[0].length;
     }
 }
