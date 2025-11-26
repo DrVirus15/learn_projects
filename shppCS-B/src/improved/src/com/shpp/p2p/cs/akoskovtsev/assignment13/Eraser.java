@@ -2,18 +2,18 @@ package improved.src.com.shpp.p2p.cs.akoskovtsev.assignment13;
 
 
 /**
- * A class responsible for erasing parts of silhouettes in a binary mask.
+ * A utility class to erase pixels near the edges of silhouettes in a binary mask.
  */
 public class Eraser {
 
     /**
-     * Separates silhouettes in the given silhouette mask by erasing pixels near the edges.
+     * Separates silhouettes in the given binary mask by erasing pixels near the edges of silhouettes.
      *
      * @param silhouetteMask the binary mask representing silhouettes
-     * @param radius         the radius around each pixel to check for edge proximity
+     * @param radius         the radius around each pixel to check for erasure
      * @return a new binary mask with separated silhouettes
      */
-    public boolean[][] separateSilhouettesMask(boolean[][] silhouetteMask, int radius) {
+    public static boolean[][] separateSilhouettesMask(boolean[][] silhouetteMask, int radius) {
         int width = silhouetteMask[0].length;
         int height = silhouetteMask.length;
         boolean[][] erasedImageMask = new boolean[height][width];
@@ -38,7 +38,7 @@ public class Eraser {
      * @param isSilhouette the binary mask representing silhouettes
      * @return true if the pixel needs to be erased, false otherwise
      */
-    private boolean isNeedsErasing(int col, int row, int radius, boolean[][] isSilhouette) {
+    private static boolean isNeedsErasing(int col, int row, int radius, boolean[][] isSilhouette) {
         int width = isSilhouette[0].length;
         int height = isSilhouette.length;
         int yMin = Math.max(0, row - radius);

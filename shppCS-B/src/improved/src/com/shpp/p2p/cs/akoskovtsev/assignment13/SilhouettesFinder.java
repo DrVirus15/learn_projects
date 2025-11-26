@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class to find and count silhouettes in a given image.
+ * A utility class to find silhouettes in a silhouette mask.
  */
 public class SilhouettesFinder {
 
@@ -13,7 +13,7 @@ public class SilhouettesFinder {
      * @param silhouetteMask - a 2D boolean array representing the silhouette mask
      * @return - a list of sizes of all found silhouettes
      */
-    public List<Integer> findSilhouettes(boolean[][] silhouetteMask) {
+    public static List<Integer> findSilhouettes(boolean[][] silhouetteMask) {
         int height = silhouetteMask.length;
         int width = silhouetteMask[0].length;
         boolean[][] visited = new boolean[height][width];
@@ -28,19 +28,5 @@ public class SilhouettesFinder {
             }
         }
         return silhouetteSizes;
-    }
-
-    /**
-     * Finds the size of the largest silhouette from the list of silhouette sizes.
-     *
-     * @param silhouettes - a list of silhouette sizes
-     * @return - the size of the largest silhouette
-     */
-    public int findLargestSilhouetteSize(List<Integer> silhouettes) {
-        int maxSize = 0;
-        for (Integer silhouette : silhouettes) {
-            maxSize = Math.max(silhouette, maxSize);
-        }
-        return maxSize;
     }
 }

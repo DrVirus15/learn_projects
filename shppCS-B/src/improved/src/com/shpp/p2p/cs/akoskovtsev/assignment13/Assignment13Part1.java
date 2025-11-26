@@ -23,7 +23,7 @@ public class Assignment13Part1 {
         String filePath = getFilePathFromArgs(args);
         BufferedImage image = null;
         try {
-            image = new ImageLoader().load(filePath);
+            image = ImageLoader.load(filePath);
         } catch (IOException e) {
             System.err.println("ERROR: " + e.getMessage());
         }

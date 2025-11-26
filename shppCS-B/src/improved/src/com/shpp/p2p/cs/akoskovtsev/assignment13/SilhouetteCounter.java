@@ -26,18 +26,6 @@ public class SilhouetteCounter {
     private static final int MIN_ERASE_RADIUS = 3;
 
     /**
-     * Finder for silhouettes in the silhouette mask.
-     */
-    private final SilhouettesFinder silhouettesFinder;
-
-    /**
-     * Constructor initializing the SilhouettesFinder.
-     */
-    public SilhouetteCounter() {
-        this.silhouettesFinder = new SilhouettesFinder();
-    }
-
-    /**
      * Processes the given image to count the number of distinct silhouettes.
      *
      * @param image - the input image to be processed
@@ -45,8 +33,8 @@ public class SilhouetteCounter {
      */
     public int processImageAndCountSilhouettes(BufferedImage image) {
         boolean[][] silhouetteMask = MaskBuilder.buildSilhouetteMask(image);
-        int largestSilhouetteSize = findLargestSilhouetteSize(silhouetteMask);
         boolean[][] separatedSilhouetteMask = separateSilhouettes(silhouetteMask);
+        int largestSilhouetteSize = findLargestSilhouetteSize(silhouetteMask);
         int minValidSize = (int) (largestSilhouetteSize * NOISE_FILTER_RATIO);
         return countSilhouettes(separatedSilhouetteMask, minValidSize);
     }
@@ -60,7 +48,7 @@ public class SilhouetteCounter {
     public boolean[][] separateSilhouettes(boolean[][] silhouetteMask) {
         int largestSilhouetteSize = findLargestSilhouetteSize(silhouetteMask);
         int radius = Math.max(MIN_ERASE_RADIUS, (int) (largestSilhouetteSize * ERASE_RADIUS_SCALE));
-        return new Eraser().separateSilhouettesMask(silhouetteMask, radius);
+        return Eraser.separateSilhouettesMask(silhouetteMask, radius);
     }
 
     /**
@@ -70,8 +58,12 @@ public class SilhouetteCounter {
      * @return - the size of the largest silhouette
      */
     private int findLargestSilhouetteSize(boolean[][] silhouetteMask) {
-        List<Integer> silhouettes = silhouettesFinder.findSilhouettes(silhouetteMask);
-        return silhouettesFinder.findLargestSilhouetteSize(silhouettes);
+        List<Integer> silhouettes = SilhouettesFinder.findSilhouettes(silhouetteMask);
+        int maxSize = 0;
+        for (Integer silhouette : silhouettes) {
+            maxSize = Math.max(silhouette, maxSize);
+        }
+        return maxSize;
     }
 
     /**
@@ -82,8 +74,8 @@ public class SilhouetteCounter {
      * @param minValidSize   - the minimum size for a silhouette to be considered valid
      * @return - the count of valid silhouettes
      */
-    public int countSilhouettes(boolean[][] silhouetteMask, int minValidSize) {
-        List<Integer> silhouettes = silhouettesFinder.findSilhouettes(silhouetteMask);
+    private int countSilhouettes(boolean[][] silhouetteMask, int minValidSize) {
+        List<Integer> silhouettes = SilhouettesFinder.findSilhouettes(silhouetteMask);
         int silhouettesCount = 0;
         for (Integer silhouette : silhouettes) {
             if (silhouette > minValidSize) {
