@@ -1,5 +1,9 @@
 package improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11;
 
+/**
+ * Enumeration representing mathematical operators and functions. Each operator has its symbol, number of operands,
+ * precedence level, and associativity. The enum also provides a method to perform the calculation based on the operator.
+ */
 public enum Operator {
     PLUS("+", 2, 1, true) {
         @Override
@@ -119,11 +123,31 @@ public enum Operator {
         }
     };
 
+    /**
+     * The symbol representing the operator ("+", "-", "*", "/" "^" "cos" "sin" "tan" etc.).
+     */
     private final String operator;
+    /**
+     * The number of operands the operator works with (1 for unary operators, 2 for binary operators).
+     */
     private final int operandsCount;
+    /**
+     * The precedence level of the operator. Higher values indicate higher precedence.
+     */
     private final int precedence;
+    /**
+     * Indicates if the operator is left associative.
+     */
     private final boolean isLeftAssociativity;
 
+    /**
+     * Constructor to initialize the operator with its properties.
+     *
+     * @param operator            - the symbol representing the operator
+     * @param operandsCount       - number of operands the operator works with
+     * @param precedence          - precedence level of the operator
+     * @param isLeftAssociativity - indicates if the operator is left associative
+     */
     Operator(String operator, int operandsCount, int precedence, boolean isLeftAssociativity) {
         this.operator = operator;
         this.operandsCount = operandsCount;
@@ -147,10 +171,11 @@ public enum Operator {
 
     /**
      * Get the precedence level of the operator. Higher values indicate higher precedence.
-     * 1 - low precedence (e.g., +, -)
-     * 2 - medium precedence (e.g., *, /)
-     * 3 - high precedence (e.g., ^)
-     * 4 - very high precedence (e.g., functions like sin, cos, etc.)
+     * 0 - brackets
+     * 1 - low precedence (+, -)
+     * 2 - medium precedence ( *, /)
+     * 3 - high precedence (^, unary minus, sqrt)
+     * 4 - very high precedence (sin, cos, etc.)
      */
     public int getPrecedence() {
         return precedence;
@@ -163,6 +188,11 @@ public enum Operator {
         return isLeftAssociativity;
     }
 
-
+    /**
+     * An abstract method to perform the calculation based on the operator.
+     *
+     * @param operands - an array of operands for the calculation
+     * @return the result of the calculation
+     */
     public abstract double calculate(double[] operands);
 }

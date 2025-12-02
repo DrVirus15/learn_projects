@@ -11,10 +11,14 @@ import java.util.*;
  */
 public class Assignment11Part1 {
 
+    /**
+     * Map of operator symbols to their corresponding Operator enum instances.
+     */
     private static final Map<String, Operator> OPERATOR_MAP = new HashMap<>();
+
     // Static block to initialize the operator map
     static {
-        for(Operator op : Operator.values()){
+        for (Operator op : Operator.values()) {
             OPERATOR_MAP.put(op.getOperator(), op);
         }
     }
@@ -35,13 +39,11 @@ public class Assignment11Part1 {
                 System.out.println("Exception while parse variables: " + e.getMessage());
             }
         }
-        double result = 0;
         try {
-            result = calculate(expression, variables);
+            System.out.println(calculate(expression, variables));
         } catch (NumberFormatException | EmptyStackException | ArithmeticException e) {
             System.out.println("Exception while evaluating expression: " + e.getMessage());
         }
-        System.out.print(result);
     }
 
     /**
@@ -140,6 +142,7 @@ public class Assignment11Part1 {
             throw new ArithmeticException("The result of the operation is undefined (infinity or NaN).");
         }
     }
+
     /**
      * Parses the expression string into Reverse Polish Notation (RPN) using the Shunting Yard algorithm.
      *
