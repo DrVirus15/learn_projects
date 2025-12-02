@@ -1,7 +1,5 @@
 package improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11;
 
-import improved.src.com.shpp.p2p.cs.akoskovtsev.assignment11.operators.*;
-
 import java.util.*;
 
 /**
@@ -12,32 +10,13 @@ import java.util.*;
  * Coma (,) is not supported in double numbers.
  */
 public class Assignment11Part1 {
-    /**
-     * A map of operator symbols to their corresponding Operator implementations.
-     */
-    private static final Map<String, Operator> OPERATOR_MAP = new HashMap<>();
 
+    private static final Map<String, Operator> OPERATOR_MAP = new HashMap<>();
     // Static block to initialize the operator map
     static {
-        OPERATOR_MAP.put("+", new Plus());
-        OPERATOR_MAP.put("-", new Minus());
-        OPERATOR_MAP.put("*", new Multiply());
-        OPERATOR_MAP.put("/", new Div());
-        OPERATOR_MAP.put("^", new Pow());
-        OPERATOR_MAP.put("~", new UnaryMinus());
-        OPERATOR_MAP.put("(", new OpenBracket());
-        OPERATOR_MAP.put(")", new CloseBracket());
-        OPERATOR_MAP.put("cos", new Cos());
-        OPERATOR_MAP.put("acos", new ACos());
-        OPERATOR_MAP.put("sin", new Sin());
-        OPERATOR_MAP.put("asin", new ASin());
-        OPERATOR_MAP.put("tan", new Tan());
-        OPERATOR_MAP.put("atan", new ATan());
-        OPERATOR_MAP.put("log", new Log());
-        OPERATOR_MAP.put("log2", new Log_2());
-        OPERATOR_MAP.put("log10", new Log_10());
-        OPERATOR_MAP.put("sqrt", new Sqrt());
-        OPERATOR_MAP.put("exp", new Exp());
+        for(Operator op : Operator.values()){
+            OPERATOR_MAP.put(op.getOperator(), op);
+        }
     }
 
     /**
@@ -151,26 +130,16 @@ public class Assignment11Part1 {
      * @throws ArithmeticException - if an arithmetic error occurs (division by zero)
      */
     private static void performTheOperation(String token, Stack<Double> tokens) throws ArithmeticException {
-        double[] operand = new double[OPERATOR_MAP.get(token).getOperandCount()];
-        double[] enumOperands = new double[com.shpp.p2p.cs.test.Operator.valueOf(token).getOperandCount()];
-        if (tokens.size() < operand.length) throw new EmptyStackException();
-        for (int i = 0; i < operand.length; i++) {
-            operand[operand.length - 1 - i] = tokens.pop();
+        double[] operands = new double[OPERATOR_MAP.get(token).getOperandsCount()];
+        if (tokens.size() < operands.length) throw new EmptyStackException();
+        for (int i = 0; i < operands.length; i++) {
+            operands[operands.length - 1 - i] = tokens.pop();
         }
-        tokens.push(OPERATOR_MAP.get(token).calculate(operand));
-        tokens.push(makeBaseOperation(token, enumOperands));
+        tokens.push(OPERATOR_MAP.get(token).calculate(operands));
         if (tokens.peek().isInfinite() || tokens.peek().isNaN()) {
             throw new ArithmeticException("The result of the operation is undefined (infinity or NaN).");
         }
     }
-
-    private static double makeBaseOperation(String token, double[] operands){
-        double result = 0;
-        if(com.shpp.p2p.cs.test.Operator.valueOf(token).isLeftAssociativity()){
-            return
-        }
-    }
-
     /**
      * Parses the expression string into Reverse Polish Notation (RPN) using the Shunting Yard algorithm.
      *
@@ -272,6 +241,7 @@ public class Assignment11Part1 {
      * Handles the closing bracket by popping operators from the stack to the RPN output
      * until the corresponding opening bracket is found.
      * If no opening bracket is found, an EmptyStackException is thrown.
+     *
      * @param opStack - stack of operators
      * @param rpn     - output list for RPN
      */
@@ -291,11 +261,11 @@ public class Assignment11Part1 {
     /**
      * Checks if the given string is a recognized operator.
      *
-     * @param strSymbol - the string to check
+     * @param symbol - the string to check
      * @return - true if the string is an operator, false otherwise
      */
-    private static boolean isOperator(String strSymbol) {
-        return OPERATOR_MAP.get(strSymbol) != null;
+    private static boolean isOperator(String symbol) {
+        return OPERATOR_MAP.get(symbol) != null;
     }
 
     /**
