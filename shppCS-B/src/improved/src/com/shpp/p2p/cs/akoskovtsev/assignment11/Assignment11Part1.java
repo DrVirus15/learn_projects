@@ -152,13 +152,22 @@ public class Assignment11Part1 {
      */
     private static void performTheOperation(String token, Stack<Double> tokens) throws ArithmeticException {
         double[] operand = new double[OPERATOR_MAP.get(token).getOperandCount()];
+        double[] enumOperands = new double[com.shpp.p2p.cs.test.Operator.valueOf(token).getOperandCount()];
         if (tokens.size() < operand.length) throw new EmptyStackException();
         for (int i = 0; i < operand.length; i++) {
             operand[operand.length - 1 - i] = tokens.pop();
         }
         tokens.push(OPERATOR_MAP.get(token).calculate(operand));
+        tokens.push(makeBaseOperation(token, enumOperands));
         if (tokens.peek().isInfinite() || tokens.peek().isNaN()) {
             throw new ArithmeticException("The result of the operation is undefined (infinity or NaN).");
+        }
+    }
+
+    private static double makeBaseOperation(String token, double[] operands){
+        double result = 0;
+        if(com.shpp.p2p.cs.test.Operator.valueOf(token).isLeftAssociativity()){
+            return
         }
     }
 
